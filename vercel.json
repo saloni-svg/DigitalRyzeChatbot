@@ -1,0 +1,35 @@
+{
+  "headers": [
+    {
+      "source": "/widget.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/analyze",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/insights",
+      "schedule": "30 3 * * 1"
+    }
+  ],
+  "functions": {
+    "api/admin/*.js": {
+      "maxDuration": 60
+    },
+    "api/cron/*.js": {
+      "maxDuration": 60
+    }
+  }
+}
