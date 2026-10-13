@@ -12,7 +12,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#14213D; --ink-2:#1F2F55; --text:#1B2338; --muted:#667085; --faint:#98A2B3;
@@ -650,6 +650,11 @@
   .fu-up:last-child{border-bottom:0}
   .fu-up .fu-who span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:520px}
   .fu-up .btn{padding:7px 12px;font-size:13px}
+
+  /* sign-in brand panel: same typeface as digitalryze.com (Inter) */
+  .login-brand,.login-brand *{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif}
+  .login-pitch h2{font-weight:700;letter-spacing:-.03em}
+  .login-feats b{font-weight:600}
 </style>
 </head>
 <body>
@@ -671,13 +676,13 @@
           <span><b>Calendar</b>Every booked meeting, synced from Calendly.</span></li>
       </ul>
     </div>
-    <div class="login-foot">DigitalRyze, growth marketing agency</div>
+    <div class="login-foot">DigitalRYZE, growth marketing agency</div>
   </div>
   <div class="login-side">
     <form class="login-card" id="loginForm">
       <img src="/admin/logo.png" alt="DigitalRyze" class="login-card-logo">
       <h1>Welcome back</h1>
-      <p>Sign in to your DigitalRyze dashboard.</p>
+      <p>Sign in to your DigitalRYZE dashboard.</p>
       <div class="field">
         <label for="em">Email</label>
         <input class="input" id="em" type="email" autocomplete="username" placeholder="you@digitalryze.com" required autofocus>
