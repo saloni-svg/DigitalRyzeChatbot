@@ -714,22 +714,9 @@
     /* calendar status line */
     .calnote{flex-wrap:wrap;padding:8px 12px}
     .calnote .legend{margin-left:0}
-    /* chat and lead tables become stacked cards */
-    table.dtable{min-width:0;width:100%}
-    .dtable thead{display:none}
-    .dtable tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px;padding:14px 12px;border-bottom:1px solid var(--line-2)}
-    .dtable tbody td{display:block;padding:0 !important;border:0 !important;min-width:0}
-    .dtable tbody td:nth-child(1){grid-column:1;grid-row:1}
-    .dtable tbody td:last-child{grid-column:2;grid-row:1;justify-self:end;align-self:center}
-    .dtable tbody td:nth-child(2){grid-column:1 / -1}
-    .dtable tbody td:nth-child(5){grid-column:1 / -1}
-    .dtable tbody td:nth-child(6){grid-column:1 / -1}
-    .dtable .preview,.dtable .needs{white-space:normal;max-width:none;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
-    .dtable tr.is-live{box-shadow:inset 3px 0 0 var(--lead)}
-    .dtable tr.is-waiting{box-shadow:inset 3px 0 0 #F79009}
-    .dtable tr.is-live td:first-child,.dtable tr.is-waiting td:first-child{box-shadow:none}
+    /* chat and lead tables: exactly the same table as on a computer, swipe sideways inside the card */
+    .tablewrap{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
     .tb-filters{padding:10px 12px}
-    .dtable .tstat{flex-direction:row;flex-wrap:wrap;gap:6px;max-width:none}
     /* follow-ups */
     .fu-card{padding:14px 12px}
     .fu-actions .fu-spacer{display:none}
