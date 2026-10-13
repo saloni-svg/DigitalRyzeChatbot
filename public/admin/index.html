@@ -744,6 +744,8 @@
   .fu-due-edit{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
   .fu-date{border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit;font-size:12.5px;color:var(--text);background:#fff}
   .fu-hst.replied{background:#E8F0FF;color:#2449DB}
+
+  .mlbadge.preview{background:#FFF1D6;color:#8A5300}
 </style>
 </head>
 <body>
@@ -1789,7 +1791,7 @@
   function pct(x) { return x == null ? "n/a" : Math.round(x * 100) + "%"; }
   function renderML() {
     if (!$("mlBody")) return;
-    var m = mlInfo && mlInfo.metrics, r = (mlInfo && mlInfo.rules) || { MIN_TOTAL: 20, MIN_EACH: 5, RELIABLE: 200 };
+    var m = mlInfo && mlInfo.metrics, r = (mlInfo && mlInfo.rules) || { MIN_TOTAL: 14, MIN_EACH: 2, RELIABLE: 200 };
     var all = Object.keys(outcomesMap).map(function (k) { return outcomesMap[k]; });
     var won = all.filter(function (o) { return o.stage === "won"; }).length, lost = all.filter(function (o) { return o.stage === "lost"; }).length;
     var ready = won + lost >= r.MIN_TOTAL && won >= r.MIN_EACH && lost >= r.MIN_EACH;
@@ -1808,9 +1810,9 @@
           " lost. Until then, the rule-based lead score is used. The model retrains automatically every Monday once there is enough data.") + "</p>";
       return;
     }
-    var rel = m.reliability === "reliable";
-    $("mlBadge").className = "mlbadge " + (rel ? "reliable" : "early");
-    $("mlBadge").textContent = rel ? "Reliable" : "Early, experimental";
+    var rel = m.reliability === "reliable", preview = m.reliability === "preview";
+    $("mlBadge").className = "mlbadge " + (rel ? "reliable" : preview ? "preview" : "early");
+    $("mlBadge").textContent = rel ? "Reliable" : preview ? "Preview, low confidence" : "Early, experimental";
     var better = m.auc_ml != null && m.auc_rule != null ? m.auc_ml - m.auc_rule : null;
     var verdict = better == null ? "" : better > 0.03 ? "The ML model ranks leads better than your rule-based score."
       : better < -0.03 ? "Your rule-based score currently ranks leads better. Keep using it and collect more outcomes."
@@ -1823,7 +1825,9 @@
         kpi(pct(m.accuracy_ml), "Accuracy (cross-validated)") + kpi(m.brier_ml != null ? m.brier_ml.toFixed(3) : "n/a", "Brier score (lower is better)") + "</div>" +
       "<p style='margin:0 0 6px;font-size:14px'><b>" + esc(verdict) + "</b></p>" +
       "<p class='note' style='margin:0 0 16px'>Measured with " + m.folds + "-fold cross-validation, so every lead was scored by a model that had not seen it. AUC 0.5 is random guessing, 1.0 is perfect. " +
-        (rel ? "" : "With fewer than " + r.RELIABLE + " outcomes these numbers can change a lot, so treat predictions as a rough guide.") + "</p>" +
+        (rel ? "" : preview
+          ? "<b>Preview:</b> trained on only " + m.examples + " outcomes, so predictions are a rough first guess. Keep marking leads Won or Lost; the model retrains every Monday and becomes more trustworthy at 20 or more."
+          : "With fewer than " + r.RELIABLE + " outcomes these numbers can change a lot, so treat predictions as a rough guide.") + "</p>" +
       "<p class='mlabel'>What the model learned (green raises the chance of winning, red lowers it)</p><div class='drv'>" +
       m.importance.slice(0, 10).map(function (x) {
         var w = Math.round(Math.abs(x.weight) / maxW * 50);
