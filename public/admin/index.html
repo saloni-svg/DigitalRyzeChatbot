@@ -1867,7 +1867,8 @@
   }
   var ocDraft = null;
   function outcomeCard(c) {
-    if (!c._score || !c._score.is_contact) return "";
+    // Every saved lead can get an outcome, even without email or phone (the team may have reached them another way).
+    if (!c._score || !(c._score.is_contact || (c._leads && c._leads.length) || c._outcome)) return "";
     var o = c._outcome || { stage: "new" };
     var d = ocDraft && ocDraft.key === c.session_id ? ocDraft : { key: c.session_id, stage: o.stage, lost_reason: o.lost_reason || "", deal_value: o.deal_value || "", currency: o.currency || "INR", note: o.note || "",
       meeting_at: o.meeting_at ? toLocalInput(o.meeting_at) : "", meeting_minutes: o.meeting_minutes || 30, invite: false };
