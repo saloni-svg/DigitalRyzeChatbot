@@ -7,6 +7,7 @@ import crypto from "crypto";
 import { respond } from "../lib/bot.js";
 import { supa, enc } from "../lib/db.js";
 import { sendWhatsApp, markRead } from "../lib/whatsapp.js";
+import { looksLikeContact, captureLiveLead } from "../lib/livelead.js";
 
 export const config = { maxDuration: 60 };
 
@@ -55,7 +56,7 @@ async function handleMessage(msg, contactName, host) {
   const content = String(text).trim().slice(0, MAX_MSG_CHARS);
   const ts = Number(msg.timestamp) ? Number(msg.timestamp) * 1000 : Date.now();
 
-  const row = ((await db.get(`chats?select=messages,lead_saved,handoff_status&session_id=eq.${enc(sessionId)}`).catch(() => [])) || [])[0] || {};
+  const row = ((await db.get(`chats?select=messages,lead_saved,handoff_status,agent_name&session_id=eq.${enc(sessionId)}`).catch(() => [])) || [])[0] || {};
   const history = Array.isArray(row.messages) ? row.messages : [];
   if (history.some(m => m && m.wid === msg.id)) return; // already answered (duplicate delivery)
 
@@ -63,6 +64,11 @@ async function handleMessage(msg, contactName, host) {
   if (row.handoff_status === "accepted") {
     await db.insert("live_messages", { session_id: sessionId, role: "visitor", content });
     await db.patch("chats", `session_id=eq.${enc(sessionId)}`, { updated_at: new Date().toISOString() });
+    // Shared a name or email with the team member: save as a lead (their WhatsApp number is already known).
+    if (looksLikeContact(content)) {
+      await captureLiveLead({ sessionId, host, phoneHint: "+" + number, agent: row.agent_name || "" })
+        .catch(err => console.error("Live lead capture failed", err));
+    }
     return;
   }
 

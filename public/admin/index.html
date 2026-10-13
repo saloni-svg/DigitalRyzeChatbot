@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>Admin Dashboard | DigitalRyze</title>
+<script>
+  // Already signed in (this tab)? Hide the sign-in screen before the page is drawn, so a refresh
+  // goes straight to the dashboard instead of flashing the sign-in page.
+  try { if (sessionStorage.getItem("dr-admin-key")) document.documentElement.classList.add("signed-in"); } catch (e) {}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -381,7 +386,8 @@
   .tcard .toolbar{display:block;padding:0;border-bottom:1px solid var(--line)}
   .tb-tabs{display:flex;align-items:center;gap:12px;padding:0 16px;border-bottom:1px solid var(--line-2)}
   .tb-tabs:has(> .seg.hidden){display:none}
-  .tcard .seg{background:none;border:0;padding:0;border-radius:0;gap:2px;overflow-x:auto;max-width:100%}
+  .tcard .seg{background:none;border:0;padding:0;border-radius:0;gap:2px;overflow:visible;max-width:none;flex:0 0 auto;flex-wrap:wrap}
+  .tcard .seg button{flex:0 0 auto}
   .tcard .seg button{position:relative;border-radius:0;padding:14px 10px 13px;font-size:13.5px;font-weight:600;color:var(--muted);white-space:nowrap}
   .tcard .seg button:hover{color:var(--text)}
   .tcard .seg button.on{background:none;box-shadow:none;color:var(--ink)}
@@ -530,37 +536,109 @@
   /* calendar access */
   body.no-calendar a[data-view="calendar"]{display:none!important}
   .rolebadge.nocal{background:#FFF1D6;color:#8A5300}
+
+  /* DigitalRyze logo */
+  .brand-logo{gap:10px}
+  .brand-logo .logo-img{display:block;height:30px;width:auto;max-width:100%}
+  .side .brand-logo{padding:2px 8px}
+  .side .brand-logo .logo-img{height:28px}
+  .login .brand-logo .logo-img{height:30px}
+  .brand-tag{font-size:12px;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:2px 8px}
+
+  /* ---------- sign-in page (redesign) ---------- */
+  .signed-in #login{display:none!important}
+  .login{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);place-items:stretch;padding:0;background:var(--paper)}
+  .login-brand{position:relative;overflow:hidden;background:var(--ink);color:#C9D2E8;padding:44px 56px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+  .login-brand::before{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(520px 380px at 85% 10%,rgba(47,91,255,.35),transparent 70%),radial-gradient(420px 320px at 0% 100%,rgba(245,166,35,.16),transparent 70%)}
+  .login-brand::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+    background-size:44px 44px;-webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 75%);mask-image:linear-gradient(180deg,#000 0%,transparent 75%)}
+  .login-brand>*{position:relative;z-index:1}
+  .login-logo{height:34px;width:auto;align-self:flex-start}
+  .login-pitch{max-width:470px}
+  .login-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#F5A623;margin-bottom:14px}
+  .login-pitch h2{margin:0 0 14px;color:#fff;font-size:clamp(26px,2.6vw,36px);line-height:1.15;letter-spacing:-.025em;font-weight:800}
+  .login-pitch p{margin:0 0 30px;font-size:15.5px;line-height:1.6;color:#AEB9D3}
+  .login-feats{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+  .login-feats li{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)}
+  .login-feats b{display:block;color:#fff;font-size:14.5px;margin-bottom:2px}
+  .login-feats li span:last-child{font-size:13.5px;color:#AEB9D3;line-height:1.45}
+  .lf-ico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:rgba(47,91,255,.22);color:#9DB4FF}
+  .login-foot{font-size:12.5px;color:#7C89A8}
+  .login-side{display:grid;place-items:center;padding:40px 24px;
+    background:radial-gradient(700px 360px at 50% -10%,#E3EAFF 0%,transparent 65%),var(--paper)}
+  .login .login-card{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:40px 36px;box-shadow:0 20px 50px -24px rgba(20,33,61,.25),0 2px 6px rgba(20,33,61,.05)}
+  .login-card-logo{display:none;height:28px;width:auto;margin-bottom:24px}
+  .login .login-card h1{font-size:26px;margin:0 0 6px;letter-spacing:-.025em}
+  .login .login-card>p{margin:0 0 26px;color:var(--muted)}
+  .login .input{height:46px;font-size:14.5px}
+  .login .input:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);outline:none}
+  .pw-wrap{position:relative}
+  .pw-wrap .input{width:100%;padding-right:46px}
+  .pw-toggle{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:34px;height:34px;display:grid;place-items:center;border:0;background:none;color:var(--faint);border-radius:8px;cursor:pointer}
+  .pw-toggle:hover,.pw-toggle.on{color:var(--accent);background:var(--accent-soft)}
+  .pw-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .login-btn{height:48px;margin-top:6px;font-size:15px;border-radius:12px;background:var(--accent)}
+  .login-btn:hover{background:#2449DB}
+  .login-help{margin-top:18px;font-size:12.5px;color:var(--faint);text-align:center}
+  @media (max-width:900px){
+    .login{grid-template-columns:1fr}
+    .login-brand{display:none}
+    .login-card-logo{display:block}
+  }
 </style>
 </head>
 <body>
 
 <!-- ============ LOGIN ============ -->
 <section class="login" id="login">
-  <form class="login-card" id="loginForm">
-    <div class="brand"><span class="mark">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>
-    </span>DigitalRyze Admin</div>
-    <h1>Admin Dashboard</h1>
-    <p>Sign in with your email and password to view chats and leads.</p>
-    <div class="field">
-      <label for="em">Email</label>
-      <input class="input" id="em" type="email" autocomplete="username" required autofocus>
+  <div class="login-brand" aria-hidden="true">
+    <img src="/admin/logo-light.png" alt="" class="login-logo">
+    <div class="login-pitch">
+      <span class="login-eyebrow">Chatbot admin</span>
+      <h2>Every conversation and every lead, in one place.</h2>
+      <p>See what visitors ask, who is ready to buy, and step into live chats on your website and WhatsApp.</p>
+      <ul class="login-feats">
+        <li><span class="lf-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span>
+          <span><b>Live chat and WhatsApp</b>Reply to visitors in their own language.</span></li>
+        <li><span class="lf-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg></span>
+          <span><b>Lead scoring</b>Know who to call first, and why.</span></li>
+        <li><span class="lf-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span>
+          <span><b>Calendar</b>Every booked meeting, synced from Calendly.</span></li>
+      </ul>
     </div>
-    <div class="field">
-      <label for="pw">Password</label>
-      <input class="input" id="pw" type="password" autocomplete="current-password" required>
-    </div>
-    <button class="btn btn-primary" type="submit" id="loginBtn">Sign in</button>
-    <div class="error" id="loginErr" role="alert"></div>
-  </form>
+    <div class="login-foot">DigitalRyze, growth marketing agency</div>
+  </div>
+  <div class="login-side">
+    <form class="login-card" id="loginForm">
+      <img src="/admin/logo.png" alt="DigitalRyze" class="login-card-logo">
+      <h1>Welcome back</h1>
+      <p>Sign in to your DigitalRyze dashboard.</p>
+      <div class="field">
+        <label for="em">Email</label>
+        <input class="input" id="em" type="email" autocomplete="username" placeholder="you@digitalryze.com" required autofocus>
+      </div>
+      <div class="field">
+        <label for="pw">Password</label>
+        <div class="pw-wrap">
+          <input class="input" id="pw" type="password" autocomplete="current-password" placeholder="Your password" required>
+          <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" title="Show password">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+      <button class="btn btn-primary login-btn" type="submit" id="loginBtn">Sign in</button>
+      <div class="error" id="loginErr" role="alert"></div>
+      <div class="login-help">Trouble signing in? Ask an admin to reset your password.</div>
+    </form>
+  </div>
 </section>
 
 <!-- ============ APP ============ -->
 <div class="app hidden" id="app">
   <aside class="side">
-    <div class="brand"><span class="mark">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>
-    </span>DigitalRyze</div>
+    <div class="brand brand-logo"><img src="/admin/logo-light.png" alt="DigitalRyze" class="logo-img"></div>
     <nav class="nav">
       <a href="#" data-view="chats" class="active">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1125,10 +1203,19 @@
         apply();
         if (!liveTimer) pollLive();
         runAnalyst();
+        captureOldLiveLeads();
         if (!scoringLoaded) { scoringLoaded = true; loadScoring(); loadModel(); }
         if (!me) loadMe();
       })
       .catch(function () { showError("Can't reach the server. Check your connection and try again."); });
+  }
+
+  // Once per page load: save leads from older live chats where the visitor shared their details.
+  var captureRan = false;
+  function captureOldLiveLeads() {
+    if (captureRan) return;
+    captureRan = true;
+    adminFetch(LIVE, { action: "capture_pending" }).then(function (r) { if (r && r.saved > 0) load(true); }).catch(function () {});
   }
 
   function stats() {
@@ -1839,7 +1926,10 @@
       .then(function (d) {
         if (!d || drawer.id !== id) return;
         if ((d.messages || []).length) {
-          d.messages.forEach(function (m) { drawer.after = Math.max(drawer.after, m.id); drawer.live.push(m); });
+          d.messages.forEach(function (m) {
+            if (m.id <= drawer.after || drawer.live.some(function (x) { return x.id === m.id; })) return; // already shown
+            drawer.after = Math.max(drawer.after, m.id); drawer.live.push(m);
+          });
         }
         var was = drawer.status;
         drawer.status = d.status; drawer.agent = d.agent || drawer.agent;
@@ -1861,13 +1951,15 @@
       });
   }
   function agentName() {
-    var n = "";
+    // The first name on your account, so visitors see e.g. "Zafar from DigitalRyze".
+    var n = me && me.first_name && !(me.owner && me.first_name === "Main") ? String(me.first_name).trim() : "";
+    if (n) return n;
     try { n = localStorage.getItem(AGENT_KEY) || ""; } catch (e) {}
-    if (!n) {
-      n = (window.prompt("Your first name, shown to the visitor:", "") || "").trim() || "DigitalRyze team";
-      try { localStorage.setItem(AGENT_KEY, n); } catch (e) {}
+    if (!n || n === "DigitalRyze team") {
+      n = (window.prompt("Your first name, shown to the visitor:", "") || "").trim();
+      if (n) { try { localStorage.setItem(AGENT_KEY, n); } catch (e) {} }
     }
-    return n;
+    return n || "DigitalRyze team";
   }
   function accept(id) {
     var name = agentName();
@@ -2243,6 +2335,7 @@
 
   // ---------- screens ----------
   function showLogin(msg) {
+    document.documentElement.classList.remove("signed-in");
     $("app").classList.add("hidden"); $("login").classList.remove("hidden");
     $("loginErr").textContent = msg || ""; $("loginBtn").disabled = false; $("loginBtn").textContent = "Sign in";
     ($("em").value ? $("pw") : $("em")).focus();
@@ -2254,6 +2347,13 @@
   }
 
   // ---------- events ----------
+  $("pwToggle").addEventListener("click", function () {
+    var show = $("pw").type === "password";
+    $("pw").type = show ? "text" : "password";
+    this.classList.toggle("on", show);
+    this.setAttribute("aria-label", show ? "Hide password" : "Show password");
+    this.title = show ? "Hide password" : "Show password";
+  });
   $("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var em = $("em").value.trim(), pw = $("pw").value;
@@ -2815,7 +2915,7 @@
     wrap.appendChild(btn);
   });
   try { var saved = JSON.parse(sessionStorage.getItem(ME_KEY) || "null"); if (saved) setMe(saved); } catch (e) {}
-  if (getKey()) { load(); loadMe(); } else showLogin();
+  if (getKey()) { showApp(); load(); loadMe(); } else showLogin();   // show the dashboard frame straight away while data loads
   checkPush();
 })();
 </script>

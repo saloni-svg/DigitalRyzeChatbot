@@ -1,5 +1,5 @@
 /*!
- * DigitalRyze website chat widget
+ * DigitalRYZE website chat widget
  * Embed: <script src="https://YOUR-PROJECT.vercel.app/widget.js" defer></script>
  * Optional attributes: data-color="#2F5BFF" data-api="https://.../api/chat"
  */
@@ -22,12 +22,13 @@
     catch (e) { return VISITOR_LANG; }
   })();
 
-  var GREETING = "Hi, I'm the DigitalRyze assistant. Tell me what you're trying to improve (leads, ad costs, Google visibility, your website) and I'll point you in the right direction.";
+  var GREETING = "Hi, I'm the DigitalRYZE assistant. Tell me what you're trying to improve (leads, ad costs, Google visibility, your website) and I'll point you in the right direction.";
   var CHIPS = [
     "My ad costs are too high",
     "I need more leads",
     "White label for my agency",
-    "Book a strategy call"
+    "Book a strategy call",
+    "Other"
   ];
 
   // ---------- state ----------
@@ -121,8 +122,8 @@
     '}' +
     '</style>' +
     '<div class="wrap" part="wrap">' +
-      '<div class="panel" role="dialog" aria-label="DigitalRyze chat">' +
-        '<div class="head"><div class="t"><h2>DigitalRyze assistant</h2>' +
+      '<div class="panel" role="dialog" aria-label="DigitalRYZE chat">' +
+        '<div class="head"><div class="t"><h2>DigitalRYZE assistant</h2>' +
           '<p>Answers right away. Our strategists reply within one business day.</p></div>' +
           '<button class="new" type="button" aria-label="Start a new chat" title="Start a new chat" hidden>' +
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New chat</button>' +
@@ -137,9 +138,9 @@
           '</button></form>' +
         '<div class="foot">AI assistant. Chats are saved so our team can follow up.</div>' +
       '</div>' +
-      '<button class="launch" aria-label="Open DigitalRyze chat"><span class="mark">' +
+      '<button class="launch" aria-label="Open DigitalRYZE chat"><span class="mark">' +
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg>' +
-      '</span><span class="lbl">Ask DigitalRyze</span></button>' +
+      '</span><span class="lbl">Ask DigitalRYZE</span></button>' +
     '</div>';
 
   var wrap = root.querySelector(".wrap");
@@ -175,7 +176,7 @@
       d.className = "sys"; d.textContent = text;
     } else if (role === "agent") {
       d.className = "agentwrap";
-      d.innerHTML = '<span class="agentname">' + esc(name || "DigitalRyze team") + '</span><div class="msg agent">' + linkify(text) + "</div>";
+      d.innerHTML = '<span class="agentname">' + esc(name || "DigitalRYZE team") + '</span><div class="msg agent">' + linkify(text) + "</div>";
       // Team replies are already translated into the visitor's language on the server, so no translate button is needed.
     } else {
       d.className = "msg " + (role === "user" || role === "visitor" ? "me" : "bot");
@@ -236,7 +237,12 @@
       b.type = "button";
       b.className = "chip";
       b.textContent = c;
-      b.onclick = function () { send(c); };
+      b.onclick = c === "Other"
+        ? function () {   // "Other": let the visitor type their own question
+            input.placeholder = "Tell us what you need help with";
+            input.focus();
+          }
+        : function () { send(c); };
       chips.appendChild(b);
     });
   }
@@ -337,6 +343,7 @@
       .then(function (r) { return r.json(); })
       .then(function (d) {
         (d.messages || []).forEach(function (m) {
+          if (m.id <= state.liveAfter) return; // already shown (two checks overlapped)
           state.liveAfter = Math.max(state.liveAfter, m.id);
           if (m.role === "visitor") return; // already shown when sent
           addLive(m.role, m.content, d.agent, new Date(m.created_at).getTime());
@@ -354,13 +361,13 @@
           state.live.forEach(function (m) {
             if (m.synced || (m.role !== "visitor" && m.role !== "agent")) return;
             state.messages.push({ role: m.role === "visitor" ? "user" : "assistant", ts: m.ts, ctx: true,
-              content: (m.role === "agent" ? "[" + (m.name || "Team member") + " from DigitalRyze said]: " : "") + m.content });
+              content: (m.role === "agent" ? "[" + (m.name || "Team member") + " from DigitalRYZE said]: " : "") + m.content });
             m.synced = true;
           });
           save(); stopPolling();
           // The server sends the handover message in the visitor's language; older servers don't, so say it here.
           if (!(d.messages || []).some(function (m) { return m.role === "assistant"; })) {
-            botSays("I'm the DigitalRyze AI assistant, and I'll continue helping you from here. What else can I help you with?");
+            botSays("I'm the DigitalRYZE AI assistant, and I'll continue helping you from here. What else can I help you with?");
           }
           renderStatus();
         } else if (state.handoff === "requested" && Date.now() - state.handoffAt > WAIT_MS) {
@@ -384,7 +391,7 @@
       botSays("No problem, I'm still here. What else can I help you with?");
     } else {
       botSays("Sorry, our team isn't available right now. We'll contact you shortly." +
-        (state.leadSaved ? " A DigitalRyze strategist will reach out within one business day."
+        (state.leadSaved ? " A DigitalRYZE strategist will reach out within one business day."
           : " Could you share your name and your email or phone number so we can reach you?"));
     }
     renderStatus();
@@ -396,6 +403,13 @@
   }
 
   root.querySelector(".launch").onclick = function () { setOpen(!state.open); };
+  // Lets a page open the chat, optionally with a first message: DigitalRYZEChat.open("I need more leads")
+  window.DigitalRYZEChat = {
+    open: function (text) {
+      setOpen(true);
+      if (text && state.handoff !== "live" && state.handoff !== "waiting") send(String(text));
+    }
+  };
   root.querySelector(".x").onclick = function () { setOpen(false); };
   newBtn.onclick = function () {
     if (busy) return;

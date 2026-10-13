@@ -2,6 +2,8 @@
 // GET  /api/live?session=ID&after=0          -> { status, agent, messages }
 // POST /api/live { session, action: "send", content } | { session, action: "timeout" }
 import { supa, enc, cors } from "../lib/db.js";
+import { looksLikeContact, captureLiveLead } from "../lib/livelead.js";
+import { inBackground } from "../lib/background.js";
 
 export default async function handler(req, res) {
   const ok = cors(req, res, "GET, POST, OPTIONS");
@@ -38,11 +40,13 @@ export default async function handler(req, res) {
       if (body.action === "send") {
         const content = String(body.content || "").trim().slice(0, 1500);
         if (!content) return res.status(400).json({ error: "Empty message" });
-        const rows = await db.get(`chats?select=handoff_status&session_id=eq.${enc(session)}`);
-        const status = (rows || [])[0]?.handoff_status;
-        if (status !== "accepted") return res.status(409).json({ status });
+        const rows = await db.get(`chats?select=handoff_status,agent_name&session_id=eq.${enc(session)}`);
+        const row = (rows || [])[0] || {};
+        if (row.handoff_status !== "accepted") return res.status(409).json({ status: row.handoff_status });
         const msg = await db.insert("live_messages", { session_id: session, role: "visitor", content });
         await db.patch("chats", `session_id=eq.${enc(session)}`, { updated_at: new Date().toISOString() });
+        // The visitor shared a name, email or phone with the team: save them as a lead.
+        if (looksLikeContact(content)) await inBackground(captureLiveLead({ sessionId: session, host: req.headers.host, agent: row.agent_name || "" }));
         return res.status(200).json({ ok: true, id: msg?.id });
       }
       return res.status(400).json({ error: "Unknown action" });
