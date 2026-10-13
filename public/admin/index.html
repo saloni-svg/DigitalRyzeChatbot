@@ -679,6 +679,15 @@
     .menu-open{overflow:hidden}
   }
   @media (prefers-reduced-motion:reduce){.side-panel,.side-backdrop{transition:none}}
+
+  /* phones: filter tabs wrap as pills so all of them are visible */
+  @media (max-width:600px){
+    .tb-tabs{padding:12px 12px 10px}
+    .tcard .seg{flex:1 1 auto;min-width:0;flex-wrap:wrap;gap:6px}
+    .tcard .seg button{padding:7px 12px;border:1px solid var(--line);border-radius:999px;font-size:13px;background:#fff}
+    .tcard .seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
+    .tcard .seg button.on::after{display:none}
+  }
 </style>
 </head>
 <body>
