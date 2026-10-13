@@ -1,0 +1,12 @@
+    // ---- Follow-up emails from the dashboard (paste right after the "handoff" block) ----
+    if (d.type === "followup") {
+      if (!d.to) return out("error: missing to");
+      MailApp.sendEmail({
+        to: d.to,
+        subject: d.subject || "Following up from DigitalRYZE",
+        body: d.body || "",
+        name: d.from_name || "DigitalRYZE",
+        replyTo: d.reply_to || NOTIFY_EMAIL
+      });
+      return out("followup-sent");
+    }

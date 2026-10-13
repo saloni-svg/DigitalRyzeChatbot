@@ -3,6 +3,7 @@ import actions from "../../lib/admin/actions.js";
 import analyze from "../../lib/admin/analyze.js";
 import calendar from "../../lib/admin/calendar.js";
 import chats from "../../lib/admin/chats.js";
+import followups from "../../lib/admin/followups.js";
 import insights from "../../lib/admin/insights.js";
 import live from "../../lib/admin/live.js";
 import login from "../../lib/admin/login.js";
@@ -13,7 +14,7 @@ import scoring from "../../lib/admin/scoring.js";
 import summary from "../../lib/admin/summary.js";
 import users from "../../lib/admin/users.js";
 
-const routes = { actions, analyze, calendar, chats, insights, live, login, ml, outcomes, push, scoring, summary, users };
+const routes = { actions, analyze, calendar, chats, followups, insights, live, login, ml, outcomes, push, scoring, summary, users };
 
 export const config = { maxDuration: 60 };
 

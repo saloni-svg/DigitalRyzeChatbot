@@ -587,6 +587,62 @@
     .login-brand{display:none}
     .login-card-logo{display:block}
   }
+
+  /* ---------- follow-up agent ---------- */
+  .fu-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap}
+  .fu-agent{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#EEF2FF,#F7F3FF);border:1px solid #DDE3FF;border-radius:14px;padding:12px 16px;flex:1;min-width:280px}
+  .fu-agent-ico{width:36px;height:36px;border-radius:10px;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none}
+  .fu-agent b{display:block;color:var(--ink);font-size:14.5px}
+  .fu-agent span{font-size:13px;color:var(--muted)}
+  .fu-tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:16px}
+  .fu-tabs button{background:none;border:0;padding:10px 12px;font:inherit;font-weight:700;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer}
+  .fu-tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
+  .fu-tabs button span{font-size:12px;background:var(--line-2);border-radius:999px;padding:1px 7px;margin-left:4px}
+  .fu-status{background:#fff;border:1px solid var(--line);border-radius:12px;padding:11px 14px;margin-bottom:14px;font-size:14px;color:var(--muted);display:flex;gap:10px;align-items:center}
+  .fu-status.ok{border-color:#BFE6D1;background:#F2FBF6;color:#0F7B4E}
+  .fu-status.err{border-color:#F5C2C2;background:#FDF2F2;color:#B42318}
+  .fu-spin{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:fuspin .8s linear infinite;flex:none}
+  @keyframes fuspin{to{transform:rotate(360deg)}}
+  .fu-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:var(--shadow)}
+  .fu-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .fu-av{width:38px;height:38px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:13px;flex:none}
+  .fu-who{flex:1;min-width:160px}
+  .fu-who b{display:block;color:var(--ink)}
+  .fu-who span{font-size:13px;color:var(--muted)}
+  .fu-tags{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .fu-tag{font-size:12px;font-weight:700;border-radius:999px;padding:3px 9px;background:var(--line-2);color:var(--text)}
+  .fu-tag.em{background:var(--accent-soft);color:var(--accent)}
+  .fu-tag.wa{background:#E3F6EC;color:#0F7B4E}
+  .fu-due{font-size:12.5px;color:#B76E00;font-weight:700}
+  .fu-need{margin:12px 0 4px;font-size:13.5px;color:var(--muted)}
+  .fu-need b{color:var(--text)}
+  .fu-need a{color:var(--accent);font-weight:700;text-decoration:none;margin-left:6px}
+  .fu-lbl{display:block;margin-top:12px;font-size:12.5px;font-weight:700;color:var(--muted)}
+  .fu-lbl .input{display:block;width:100%;margin-top:6px;font-size:14px;font-family:inherit}
+  .fu-lbl textarea.input{line-height:1.55;resize:vertical;min-height:120px;padding:12px}
+  .fu-sig{margin-top:8px;font-size:12.5px;color:var(--faint)}
+  .fu-err{margin-top:10px;font-size:13px;color:#B42318;background:#FDF2F2;border-radius:8px;padding:8px 10px}
+  .fu-actions{display:flex;gap:8px;align-items:center;margin-top:14px;flex-wrap:wrap}
+  .fu-actions .btn-primary{width:auto;background:var(--accent)}
+  .fu-actions .btn{padding:9px 14px;font-size:13.5px}
+  .fu-spacer{flex:1}
+  .fu-link{background:none;border:0;font:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;padding:6px}
+  .fu-link:hover{color:var(--ink)}
+  .fu-link.danger:hover{color:#B42318}
+  .fu-msg{font-size:13px;margin-top:8px;color:var(--muted);min-height:1em}
+  .fu-msg.ok{color:#0F7B4E}
+  .fu-msg.err{color:#B42318}
+  .fu-histwrap{padding:4px 0}
+  .fu-hist{border-bottom:1px solid var(--line-2);padding:12px 18px}
+  .fu-hist:last-child{border-bottom:0}
+  .fu-hist summary{display:flex;gap:10px;align-items:center;cursor:pointer;list-style:none;flex-wrap:wrap}
+  .fu-hist summary::-webkit-details-marker{display:none}
+  .fu-hmeta{font-size:12.5px;color:var(--muted)}
+  .fu-hst{font-size:11.5px;font-weight:800;border-radius:999px;padding:3px 9px;background:var(--line-2);color:var(--muted)}
+  .fu-hst.sent{background:#E3F6EC;color:#0F7B4E}
+  .fu-hst.stopped,.fu-hst.failed{background:#FDECEC;color:#B42318}
+  .fu-hsub{margin:10px 0 4px;font-weight:700;color:var(--ink);font-size:13.5px}
+  .fu-hbody{font-size:13.5px;color:var(--text);line-height:1.55;margin-top:6px}
 </style>
 </head>
 <body>
@@ -655,6 +711,10 @@
       <a href="#" data-view="calendar">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
         Calendar <span class="count hidden" id="nMeet">0</span>
+      </a>
+      <a href="#" data-view="followups">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        Follow-ups <span class="count hidden" id="nFu">0</span>
       </a>
 
     </nav>
@@ -762,6 +822,22 @@
     </div>
 
     <!-- ===== INSIGHTS ===== -->
+    <div id="fuView" class="hidden">
+      <div class="fu-top">
+        <div class="fu-agent">
+          <span class="fu-agent-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
+          <div><b>Follow-up agent</b><span id="fuAgentLine">Writes a personal follow-up for every lead that went quiet. Nothing is sent until you click Send.</span></div>
+        </div>
+        <button class="btn btn-ghost" type="button" id="fuRefresh">Find leads to follow up</button>
+      </div>
+      <div class="fu-tabs" role="tablist">
+        <button type="button" class="on" data-futab="review">To review <span id="fuCountReview">0</span></button>
+        <button type="button" data-futab="history">History</button>
+      </div>
+      <div id="fuStatus" class="fu-status hidden"></div>
+      <div id="fuList"></div>
+    </div>
+
     <div id="calView" class="hidden">
       <div class="calwrap">
         <section class="card calcard">
@@ -1204,6 +1280,7 @@
         if (!liveTimer) pollLive();
         runAnalyst();
         captureOldLiveLeads();
+        if (!fu.refreshedAt) fuLoad().catch(function () {});
         if (!scoringLoaded) { scoringLoaded = true; loadScoring(); loadModel(); }
         if (!me) loadMe();
       })
@@ -2218,12 +2295,21 @@
     $("settingsView").classList.toggle("hidden", which !== "settings");
     $("insightsView").classList.toggle("hidden", which !== "insights");
     $("calView").classList.toggle("hidden", which !== "calendar");
+    $("fuView").classList.toggle("hidden", which !== "followups");
     $("userView").classList.toggle("hidden", which !== "user");
     document.querySelector(".actions").classList.toggle("hidden", which !== "dash" && which !== "insights");
     $("exportBtn").classList.toggle("hidden", which === "insights");
     renderAlerts(lastAlerts[0], lastAlerts[1]);
   }
   function setView(v) {
+    if (v === "followups") {
+      document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-view") === "followups"); });
+      showMain("followups");
+      $("pageTitle").textContent = "Follow-ups";
+      $("subtitle").textContent = "Personal follow-ups for leads that went quiet, written by AI and sent by you.";
+      openFollowups();
+      return;
+    }
     if (v === "calendar" && me && me.can_calendar === false) v = "chats";   // calendar access turned off for this person
     document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-view") === v); });
     if (v === "insights") {
@@ -2345,6 +2431,161 @@
     showApp();
     $("rows").innerHTML = "<tr><td colspan='8'><div class='empty'><b>Couldn't load data</b>" + esc(msg) + "</div></td></tr>";
   }
+
+
+  // ---------- Follow-up agent ----------
+  var FU = "/api/admin/followups";
+  var fu = { drafts: [], sent: [], tab: "review", loading: false, refreshedAt: 0, model: "" };
+  function fuRel(iso) {
+    if (!iso) return "";
+    var d = Date.now() - new Date(iso).getTime(), day = 86400000;
+    if (d < 0) return "in " + Math.max(1, Math.round(-d / day)) + " d";
+    if (d < 3600000) return Math.max(1, Math.round(d / 60000)) + " min ago";
+    if (d < day) return Math.round(d / 3600000) + " h ago";
+    var n = Math.round(d / day); return n === 1 ? "yesterday" : n + " days ago";
+  }
+  function fuCount() {
+    var n = fu.drafts.length;
+    $("nFu").textContent = n; $("nFu").classList.toggle("hidden", !n);
+    $("fuCountReview").textContent = n;
+  }
+  function fuStatus(msg, kind) {
+    var el = $("fuStatus");
+    el.className = "fu-status" + (msg ? "" : " hidden") + (kind ? " " + kind : "");
+    el.innerHTML = msg || "";
+  }
+  function fuLoad() {
+    return adminFetch(FU).then(function (d) {
+      if (!d) return;
+      fu.drafts = d.drafts || []; fu.sent = d.sent || []; fu.model = d.model || "";
+      $("fuAgentLine").textContent = "Writes a personal follow-up for every lead that went quiet (" + (fu.model || "Claude") + "). Nothing is sent until you click Send.";
+      fuCount(); fuRender();
+    });
+  }
+  function fuFind(quiet) {
+    if (fu.loading) return;
+    fu.loading = true;
+    $("fuRefresh").disabled = true;
+    if (!quiet) fuStatus("<span class='fu-spin'></span> The agent is reading conversations and writing drafts. This takes up to a minute…");
+    adminFetch(FU, { action: "refresh" }).then(function (r) {
+      fu.refreshedAt = Date.now();
+      if (!r) return;
+      if (r.created) fuStatus("✓ " + r.created + " new draft" + (r.created === 1 ? "" : "s") + " ready to review." + (r.due > r.created ? " More will be written next time." : ""), "ok");
+      else if (r.errors && r.errors.length) fuStatus("Couldn't write drafts: " + esc(r.errors[0]), "err");
+      else if (!quiet) fuStatus(fu.drafts.length ? "No new leads are due right now. Review the drafts below." : "No leads are due for a follow-up right now. The agent checks again each time you open this page.", "ok");
+      else fuStatus("");
+      return fuLoad();
+    }).catch(function (e) { fuStatus(esc(e.message), "err"); })
+      .then(function () { fu.loading = false; $("fuRefresh").disabled = false; });
+  }
+  function openFollowups() {
+    fuLoad().catch(function (e) { fuStatus(esc(e.message), "err"); });
+    if (Date.now() - fu.refreshedAt > 10 * 60000) fuFind(false);   // look for new due leads at most every 10 minutes
+  }
+  function fuCard(f) {
+    var wa = f.channel === "whatsapp", who = f.lead_name || f.lead_email || f.lead_phone || "Lead";
+    var contact = wa ? (f.lead_phone || "") : (f.lead_email || "");
+    var due = new Date(f.due_at || f.created_at).getTime() <= Date.now() ? "Due " + fuRel(f.due_at) : "Due " + fuRel(f.due_at);
+    return "<article class='fu-card' data-id='" + f.id + "'>" +
+      "<div class='fu-head'>" +
+        "<span class='fu-av'>" + esc(initials(who)) + "</span>" +
+        "<div class='fu-who'><b>" + esc(who) + "</b><span>" + esc(contact) + "</span></div>" +
+        "<div class='fu-tags'><span class='fu-tag'>Step " + f.step + " of 3</span>" +
+          "<span class='fu-tag " + (wa ? "wa" : "em") + "'>" + (wa ? "WhatsApp" : "Email") + "</span>" +
+          "<span class='fu-due'>" + esc(due) + "</span></div>" +
+      "</div>" +
+      (f.lead_need ? "<div class='fu-need'><b>Their need:</b> " + esc(f.lead_need) + " <a href='#' class='fu-open' data-session='" + esc(f.session_id) + "'>Open chat ›</a></div>"
+                   : "<div class='fu-need'><a href='#' class='fu-open' data-session='" + esc(f.session_id) + "'>Open chat ›</a></div>") +
+      (wa ? "" : "<label class='fu-lbl'>Subject<input class='input fu-subject' value='" + esc(f.subject || "") + "' maxlength='160'></label>") +
+      "<label class='fu-lbl'>Message<textarea class='input fu-body' rows='7' maxlength='4000'>" + esc(f.body || "") + "</textarea></label>" +
+      (wa ? "" : "<div class='fu-sig'>Signed automatically: <b>" + esc((me && me.first_name) || "The DigitalRYZE team") + "</b>, DigitalRYZE · digitalryze.com. Replies go to " + esc((me && me.email) || "your email") + ".</div>") +
+      (f.error ? "<div class='fu-err'>Last attempt failed: " + esc(f.error) + "</div>" : "") +
+      "<div class='fu-actions'>" +
+        (wa ? "<button class='btn btn-primary fu-wa' type='button'>Copy and open WhatsApp</button><button class='btn btn-ghost fu-mark' type='button'>Mark as sent</button>"
+            : "<button class='btn btn-primary fu-send' type='button'>Send email</button>") +
+        "<button class='btn btn-ghost fu-rewrite' type='button'>Rewrite…</button>" +
+        "<span class='fu-spacer'></span>" +
+        "<button class='fu-link fu-skip' type='button'>Skip this step</button>" +
+        "<button class='fu-link danger fu-stop' type='button'>Stop follow-ups</button>" +
+      "</div>" +
+      "<div class='fu-msg' role='status'></div>" +
+    "</article>";
+  }
+  function fuHistoryRow(f) {
+    var who = f.lead_name || f.lead_email || f.lead_phone || "Lead";
+    var label = { sent: "Sent", skipped: "Skipped", stopped: "Stopped", failed: "Failed" }[f.status] || f.status;
+    return "<details class='fu-hist'><summary>" +
+      "<span class='fu-hst " + esc(f.status) + "'>" + esc(label) + "</span>" +
+      "<b>" + esc(who) + "</b><span class='fu-hmeta'>Step " + f.step + " · " + (f.channel === "whatsapp" ? "WhatsApp" : "Email") +
+      (f.sent_by ? " · " + esc(f.sent_by) : "") + " · " + esc(fuRel(f.sent_at || f.updated_at)) + "</span></summary>" +
+      (f.subject ? "<div class='fu-hsub'>" + esc(f.subject) + "</div>" : "") +
+      "<div class='fu-hbody'>" + esc(f.body || "").replace(/\n/g, "<br>") + "</div></details>";
+  }
+  function fuRender() {
+    document.querySelectorAll("[data-futab]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-futab") === fu.tab); });
+    var list = $("fuList");
+    if (fu.tab === "history") {
+      list.innerHTML = fu.sent.length ? "<div class='card fu-histwrap'>" + fu.sent.map(fuHistoryRow).join("") + "</div>"
+        : "<div class='card'><div class='empty'><b>No follow-ups sent yet</b>Sent, skipped and stopped follow-ups appear here.</div></div>";
+      return;
+    }
+    list.innerHTML = fu.drafts.length ? fu.drafts.map(fuCard).join("")
+      : "<div class='card'><div class='empty'><b>Nothing to review</b>When a lead goes quiet for 2 days, the agent writes a follow-up here for you to approve.</div></div>";
+    list.querySelectorAll(".fu-body").forEach(function (t) { t.style.height = "auto"; t.style.height = Math.min(420, t.scrollHeight + 4) + "px"; });
+  }
+  function fuAct(card, payload, okMsg) {
+    var msg = card.querySelector(".fu-msg"), btns = card.querySelectorAll("button");
+    btns.forEach(function (b) { b.disabled = true; });
+    msg.className = "fu-msg"; msg.textContent = "Working…";
+    return adminFetch(FU, payload).then(function (r) {
+      if (!r) return;
+      msg.className = "fu-msg ok"; msg.textContent = okMsg;
+      return r;
+    }).catch(function (e) {
+      msg.className = "fu-msg err"; msg.textContent = e.message;
+      btns.forEach(function (b) { b.disabled = false; });
+      return null;
+    });
+  }
+  $("fuRefresh").addEventListener("click", function () { fuFind(false); });
+  document.querySelectorAll("[data-futab]").forEach(function (b) {
+    b.addEventListener("click", function () { fu.tab = b.getAttribute("data-futab"); fuRender(); });
+  });
+  $("fuList").addEventListener("click", function (e) {
+    var open = e.target.closest(".fu-open");
+    if (open) { e.preventDefault(); openChat(open.getAttribute("data-session")); return; }
+    var card = e.target.closest(".fu-card"); if (!card) return;
+    var id = card.getAttribute("data-id"), f = fu.drafts.filter(function (x) { return String(x.id) === id; })[0] || {};
+    var subj = card.querySelector(".fu-subject"), body = card.querySelector(".fu-body");
+    var done = function (r) { if (r) setTimeout(function () { fuLoad(); }, 700); };
+    if (e.target.closest(".fu-send")) {
+      if (!confirm("Send this email to " + (f.lead_email || "the lead") + "?")) return;
+      fuAct(card, { action: "send", id: id, subject: subj.value, body: body.value }, "✓ Sent").then(done);
+    } else if (e.target.closest(".fu-wa")) {
+      var num = String(f.lead_phone || "").replace(/\D/g, "");
+      try { navigator.clipboard.writeText(body.value); } catch (x) {}
+      window.open("https://wa.me/" + num + "?text=" + encodeURIComponent(body.value), "_blank", "noopener");
+      card.querySelector(".fu-msg").className = "fu-msg ok";
+      card.querySelector(".fu-msg").textContent = "Message copied and WhatsApp opened. After sending it, click Mark as sent.";
+    } else if (e.target.closest(".fu-mark")) {
+      fuAct(card, { action: "mark_sent", id: id, body: body.value }, "✓ Marked as sent").then(done);
+    } else if (e.target.closest(".fu-rewrite")) {
+      var hint = prompt("How should it be rewritten? (optional)\\nFor example: shorter, more formal, mention our SEO audit, write in Hindi", "");
+      if (hint === null) return;
+      fuAct(card, { action: "regenerate", id: id, hint: hint }, "✓ Rewritten").then(function (r) {
+        if (!r) return;
+        if (subj && r.subject) subj.value = r.subject;
+        body.value = r.body || body.value;
+        f.subject = r.subject; f.body = r.body;
+        card.querySelectorAll("button").forEach(function (b) { b.disabled = false; });
+      });
+    } else if (e.target.closest(".fu-skip")) {
+      fuAct(card, { action: "skip", id: id }, "Skipped. The next step is scheduled.").then(done);
+    } else if (e.target.closest(".fu-stop")) {
+      if (!confirm("Stop all follow-ups for " + (f.lead_name || "this lead") + "?")) return;
+      fuAct(card, { action: "stop", id: id, session_id: f.session_id }, "Stopped. No more follow-ups for this lead.").then(done);
+    }
+  });
 
   // ---------- events ----------
   $("pwToggle").addEventListener("click", function () {
