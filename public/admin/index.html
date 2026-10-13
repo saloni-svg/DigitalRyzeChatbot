@@ -643,6 +643,13 @@
   .fu-hst.stopped,.fu-hst.failed{background:#FDECEC;color:#B42318}
   .fu-hsub{margin:10px 0 4px;font-weight:700;color:var(--ink);font-size:13.5px}
   .fu-hbody{font-size:13.5px;color:var(--text);line-height:1.55;margin-top:6px}
+
+  .fu-why{margin-top:4px;font-size:13px;color:var(--muted)}
+  .fu-status{flex-wrap:wrap;flex-direction:column;align-items:flex-start}
+  .fu-up{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--line-2);flex-wrap:wrap}
+  .fu-up:last-child{border-bottom:0}
+  .fu-up .fu-who span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:520px}
+  .fu-up .btn{padding:7px 12px;font-size:13px}
 </style>
 </head>
 <body>
@@ -832,6 +839,7 @@
       </div>
       <div class="fu-tabs" role="tablist">
         <button type="button" class="on" data-futab="review">To review <span id="fuCountReview">0</span></button>
+        <button type="button" data-futab="upcoming">Upcoming <span id="fuCountUp">0</span></button>
         <button type="button" data-futab="history">History</button>
       </div>
       <div id="fuStatus" class="fu-status hidden"></div>
@@ -2435,7 +2443,7 @@
 
   // ---------- Follow-up agent ----------
   var FU = "/api/admin/followups";
-  var fu = { drafts: [], sent: [], tab: "review", loading: false, refreshedAt: 0, model: "" };
+  var fu = { drafts: [], sent: [], upcoming: [], tab: "review", loading: false, refreshedAt: 0, model: "" };
   function fuRel(iso) {
     if (!iso) return "";
     var d = Date.now() - new Date(iso).getTime(), day = 86400000;
@@ -2454,6 +2462,19 @@
     el.className = "fu-status" + (msg ? "" : " hidden") + (kind ? " " + kind : "");
     el.innerHTML = msg || "";
   }
+  // Why leads are or aren't getting follow-ups, in plain words.
+  function fuWhy(c) {
+    if (!c) return "";
+    var parts = [];
+    if (c.closed) parts.push(c.closed + " at Meeting, Proposal, Won or Lost");
+    if (c.no_contact) parts.push(c.no_contact + " without an email or phone");
+    if (c.upcoming) parts.push(c.upcoming + " not due yet");
+    if (c.waiting) parts.push(c.waiting + " with a draft waiting");
+    if (c.came_back) parts.push(c.came_back + " came back to chat (handle personally)");
+    if (c.stopped) parts.push(c.stopped + " stopped");
+    if (c.finished) parts.push(c.finished + " finished all 3 steps");
+    return "Checked " + c.leads + " lead" + (c.leads === 1 ? "" : "s") + " from the last 60 days" + (parts.length ? ": " + parts.join(", ") + "." : ".");
+  }
   function fuLoad() {
     return adminFetch(FU).then(function (d) {
       if (!d) return;
@@ -2470,9 +2491,14 @@
     adminFetch(FU, { action: "refresh" }).then(function (r) {
       fu.refreshedAt = Date.now();
       if (!r) return;
-      if (r.created) fuStatus("✓ " + r.created + " new draft" + (r.created === 1 ? "" : "s") + " ready to review." + (r.due > r.created ? " More will be written next time." : ""), "ok");
+      fu.upcoming = r.upcoming || [];
+      $("fuCountUp").textContent = fu.upcoming.length;
+      var why = fuWhy(r.counts);
+      if (r.created) fuStatus("✓ " + r.created + " new draft" + (r.created === 1 ? "" : "s") + " ready to review." + (r.due > r.created ? " More will be written next time." : "") + (why ? "<div class='fu-why'>" + why + "</div>" : ""), "ok");
       else if (r.errors && r.errors.length) fuStatus("Couldn't write drafts: " + esc(r.errors[0]), "err");
-      else if (!quiet) fuStatus(fu.drafts.length ? "No new leads are due right now. Review the drafts below." : "No leads are due for a follow-up right now. The agent checks again each time you open this page.", "ok");
+      else if (!quiet) fuStatus((fu.drafts.length ? "No new leads are due right now." : "No leads are due for a follow-up right now.") +
+        (why ? "<div class='fu-why'>" + why + "</div>" : "") +
+        (fu.upcoming.length ? "<div class='fu-why'>See the <b>Upcoming</b> tab to write one now without waiting.</div>" : ""), "ok");
       else fuStatus("");
       return fuLoad();
     }).catch(function (e) { fuStatus(esc(e.message), "err"); })
@@ -2524,6 +2550,18 @@
   function fuRender() {
     document.querySelectorAll("[data-futab]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-futab") === fu.tab); });
     var list = $("fuList");
+    if (fu.tab === "upcoming") {
+      list.innerHTML = fu.upcoming.length ? "<div class='card fu-histwrap'>" + fu.upcoming.map(function (u) {
+        var who = u.name || u.email || u.phone || "Lead";
+        return "<div class='fu-up'><span class='fu-av'>" + esc(initials(who)) + "</span>" +
+          "<div class='fu-who'><b>" + esc(who) + "</b><span>" + esc(u.email || u.phone) + (u.need ? " · " + esc(u.need) : "") + "</span></div>" +
+          "<span class='fu-tag'>Step " + u.step + " of 3</span><span class='fu-tag " + (u.channel === "whatsapp" ? "wa" : "em") + "'>" + (u.channel === "whatsapp" ? "WhatsApp" : "Email") + "</span>" +
+          "<span class='fu-hmeta'>Due " + esc(fuRel(u.due_at)) + "</span>" +
+          "<button class='btn btn-ghost fu-now' type='button' data-session='" + esc(u.session_id) + "'>Write now</button></div>";
+      }).join("") + "</div>"
+        : "<div class='card'><div class='empty'><b>Nothing upcoming</b>Leads appear here while they wait for their next follow-up. Click <b>Find leads to follow up</b> to check.</div></div>";
+      return;
+    }
     if (fu.tab === "history") {
       list.innerHTML = fu.sent.length ? "<div class='card fu-histwrap'>" + fu.sent.map(fuHistoryRow).join("") + "</div>"
         : "<div class='card'><div class='empty'><b>No follow-ups sent yet</b>Sent, skipped and stopped follow-ups appear here.</div></div>";
@@ -2552,6 +2590,18 @@
     b.addEventListener("click", function () { fu.tab = b.getAttribute("data-futab"); fuRender(); });
   });
   $("fuList").addEventListener("click", function (e) {
+    var now = e.target.closest(".fu-now");
+    if (now) {
+      now.disabled = true; now.textContent = "Writing…";
+      adminFetch(FU, { action: "write_now", session_id: now.getAttribute("data-session") }).then(function (r) {
+        if (!r) return;
+        fu.upcoming = fu.upcoming.filter(function (u) { return u.session_id !== now.getAttribute("data-session"); });
+        $("fuCountUp").textContent = fu.upcoming.length;
+        fu.tab = "review"; fuStatus("✓ Draft written. Review it below.", "ok");
+        return fuLoad();
+      }).catch(function (err) { now.disabled = false; now.textContent = "Write now"; alert(err.message); });
+      return;
+    }
     var open = e.target.closest(".fu-open");
     if (open) { e.preventDefault(); openChat(open.getAttribute("data-session")); return; }
     var card = e.target.closest(".fu-card"); if (!card) return;
