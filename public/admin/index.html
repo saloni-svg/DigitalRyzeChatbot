@@ -688,6 +688,54 @@
     .tcard .seg button.on{background:var(--ink);border-color:var(--ink);color:#fff}
     .tcard .seg button.on::after{display:none}
   }
+
+  /* ---------- phones: fit the screen, no sideways scrolling, tighter spacing ---------- */
+  @media (max-width:600px){
+    html{overflow-x:clip}   /* safety net only: never creates a second scroll area */
+    main{padding:14px 10px calc(24px + env(safe-area-inset-bottom, 0px));min-width:0}
+    .top{margin-bottom:14px;gap:10px}
+    .top>div:first-child{width:100%}
+    h1#pageTitle{font-size:24px}
+    /* All time / Export CSV / Refresh: share one row, never wider than the screen */
+    .actions{width:100%;flex-wrap:wrap;gap:8px}
+    .actions>*{flex:1 1 0;min-width:0}
+    .actions .rangewrap{flex:1 1 100%}
+    .actions .rangewrap select{width:100%}
+    .actions .btn{padding:9px 10px;font-size:13px;white-space:nowrap}
+    /* live chat alerts: text on top, buttons below */
+    .req{flex-wrap:wrap;gap:10px;padding:12px}
+    .req .info{flex:1 1 calc(100% - 26px)}
+    .req .info span{white-space:normal}
+    .req .btns{width:100%;flex-wrap:wrap}
+    .req .btns .btn,.req .btns button{flex:1 1 0;min-width:0;padding:9px 8px;font-size:13px}
+    /* cards edge to edge with small gaps */
+    .stats{gap:8px}
+    .card{border-radius:14px}
+    /* calendar status line */
+    .calnote{flex-wrap:wrap;padding:8px 12px}
+    .calnote .legend{margin-left:0}
+    /* chat and lead tables become stacked cards */
+    table.dtable{min-width:0;width:100%}
+    .dtable thead{display:none}
+    .dtable tbody tr{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px 12px;padding:14px 12px;border-bottom:1px solid var(--line-2)}
+    .dtable tbody td{display:block;padding:0 !important;border:0 !important;min-width:0}
+    .dtable tbody td:nth-child(1){grid-column:1;grid-row:1}
+    .dtable tbody td:last-child{grid-column:2;grid-row:1;justify-self:end;align-self:center}
+    .dtable tbody td:nth-child(2){grid-column:1 / -1}
+    .dtable tbody td:nth-child(5){grid-column:1 / -1}
+    .dtable tbody td:nth-child(6){grid-column:1 / -1}
+    .dtable .preview,.dtable .needs{white-space:normal;max-width:none;-webkit-line-clamp:2;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden}
+    .dtable tr.is-live{box-shadow:inset 3px 0 0 var(--lead)}
+    .dtable tr.is-waiting{box-shadow:inset 3px 0 0 #F79009}
+    .dtable tr.is-live td:first-child,.dtable tr.is-waiting td:first-child{box-shadow:none}
+    .tb-filters{padding:10px 12px}
+    .dtable .tstat{flex-direction:row;flex-wrap:wrap;gap:6px;max-width:none}
+    /* follow-ups */
+    .fu-card{padding:14px 12px}
+    .fu-actions .fu-spacer{display:none}
+    /* chat panel uses the whole phone screen */
+    .drawer{width:100%}
+  }
 </style>
 </head>
 <body>
