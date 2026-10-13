@@ -723,6 +723,27 @@
     /* chat panel uses the whole phone screen */
     .drawer{width:100%}
   }
+
+  /* follow-up settings, custom dates, replied */
+  .fu-topbtns{display:flex;gap:8px;flex-wrap:wrap}
+  .fu-topbtns .btn{display:inline-flex;align-items:center;gap:6px}
+  .fu-settings{padding:18px 20px;margin-bottom:16px}
+  .fu-settings h3{margin:0 0 4px;font-size:16px;color:var(--ink)}
+  .fu-set-sub{margin:0 0 14px;font-size:13px;color:var(--muted)}
+  .fu-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line-2);font-size:14px;color:var(--text);flex-wrap:wrap}
+  .fu-row select.input{width:90px}
+  .fu-days{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13.5px;min-width:min(320px,100%)}
+  .fu-days input{width:70px;text-align:center}
+  .fu-replymode{border:0;padding:12px 0 0;margin:6px 0 0;border-top:1px solid var(--line-2)}
+  .fu-replymode legend{font-size:14px;font-weight:700;color:var(--ink);padding:0;margin-bottom:8px}
+  .fu-replymode label{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;color:var(--muted);padding:6px 0;line-height:1.45}
+  .fu-replymode b{color:var(--text)}
+  .fu-replymode input{margin-top:3px}
+  .fu-set-actions{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .fu-set-actions .btn-primary{width:auto;background:var(--accent)}
+  .fu-due-edit{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--muted)}
+  .fu-date{border:1px solid var(--line);border-radius:8px;padding:5px 7px;font:inherit;font-size:12.5px;color:var(--text);background:#fff}
+  .fu-hst.replied{background:#E8F0FF;color:#2449DB}
 </style>
 </head>
 <body>
@@ -923,8 +944,32 @@
           <span class="fu-agent-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>
           <div><b>Follow-up agent</b><span id="fuAgentLine">Writes a personal follow-up for every lead that went quiet. Nothing is sent until you click Send.</span></div>
         </div>
-        <button class="btn btn-ghost" type="button" id="fuRefresh">Find leads to follow up</button>
+        <div class="fu-topbtns">
+          <button class="btn btn-ghost hidden" type="button" id="fuSetBtn" aria-expanded="false" aria-controls="fuSettings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>
+            Settings
+          </button>
+          <button class="btn btn-ghost" type="button" id="fuRefresh">Find leads to follow up</button>
+        </div>
       </div>
+      <form class="card fu-settings hidden" id="fuSettings">
+        <h3>Follow-up settings</h3>
+        <p class="fu-set-sub">Applies to every lead. You can still change one lead's date in the <b>Upcoming</b> tab.</p>
+        <label class="fu-row"><span>Number of follow-ups per lead</span>
+          <select class="input" id="fuSteps"><option value="1">1</option><option value="2">2</option><option value="3">3</option></select></label>
+        <label class="fu-row" data-step="1"><span>Follow-up 1 is due</span>
+          <span class="fu-days"><input class="input" type="number" min="0" max="60" id="fuDay1"> days after the lead goes quiet</span></label>
+        <label class="fu-row" data-step="2"><span>Follow-up 2 is due</span>
+          <span class="fu-days"><input class="input" type="number" min="0" max="60" id="fuDay2"> days after follow-up 1</span></label>
+        <label class="fu-row" data-step="3"><span>Follow-up 3 is due</span>
+          <span class="fu-days"><input class="input" type="number" min="0" max="60" id="fuDay3"> days after follow-up 2</span></label>
+        <fieldset class="fu-replymode">
+          <legend>When a lead replies to a follow-up email</legend>
+          <label><input type="radio" name="fuReply" value="team"> <span><b>Replies go to the team member who sent it.</b> When someone answers, click <b>They replied</b> to stop their follow-ups.</span></label>
+          <label><input type="radio" name="fuReply" value="auto"> <span><b>Detect replies automatically.</b> Replies go to the Gmail account that sends follow-ups, and the agent stops follow-ups as soon as a reply arrives. Needs the reply check in Google Apps Script.</span></label>
+        </fieldset>
+        <div class="fu-set-actions"><button class="btn btn-primary" type="submit" id="fuSetSave">Save settings</button><span class="fu-msg" id="fuSetMsg"></span></div>
+      </form>
       <div class="fu-tabs" role="tablist">
         <button type="button" class="on" data-futab="review">To review <span id="fuCountReview">0</span></button>
         <button type="button" data-futab="upcoming">Upcoming <span id="fuCountUp">0</span></button>
@@ -2532,7 +2577,7 @@
 
   // ---------- Follow-up agent ----------
   var FU = "/api/admin/followups";
-  var fu = { drafts: [], sent: [], upcoming: [], tab: "review", loading: false, refreshedAt: 0, model: "" };
+  var fu = { drafts: [], sent: [], upcoming: [], tab: "review", loading: false, refreshedAt: 0, model: "", settings: { steps: 3, days: [2, 3, 5], reply_mode: "team" }, canEdit: false };
   function fuRel(iso) {
     if (!iso) return "";
     var d = Date.now() - new Date(iso).getTime(), day = 86400000;
@@ -2540,6 +2585,10 @@
     if (d < 3600000) return Math.max(1, Math.round(d / 60000)) + " min ago";
     if (d < day) return Math.round(d / 3600000) + " h ago";
     var n = Math.round(d / day); return n === 1 ? "yesterday" : n + " days ago";
+  }
+  function fuDateValue(iso) {
+    var d = new Date(iso); if (isNaN(d)) return "";
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
   }
   function fuCount() {
     var n = fu.drafts.length;
@@ -2560,14 +2609,18 @@
     if (c.upcoming) parts.push(c.upcoming + " not due yet");
     if (c.waiting) parts.push(c.waiting + " with a draft waiting");
     if (c.came_back) parts.push(c.came_back + " came back to chat (handle personally)");
+    if (c.replied) parts.push(c.replied + " replied (follow-ups stopped)");
     if (c.stopped) parts.push(c.stopped + " stopped");
-    if (c.finished) parts.push(c.finished + " finished all 3 steps");
+    if (c.finished) parts.push(c.finished + " finished all follow-ups");
     return "Checked " + c.leads + " lead" + (c.leads === 1 ? "" : "s") + " from the last 60 days" + (parts.length ? ": " + parts.join(", ") + "." : ".");
   }
   function fuLoad() {
     return adminFetch(FU).then(function (d) {
       if (!d) return;
       fu.drafts = d.drafts || []; fu.sent = d.sent || []; fu.model = d.model || "";
+      if (d.settings) fu.settings = d.settings;
+      fu.canEdit = !!d.can_edit_settings;
+      $("fuSetBtn").classList.toggle("hidden", !fu.canEdit);
       $("fuAgentLine").textContent = "Writes a personal follow-up for every lead that went quiet (" + (fu.model || "Claude") + "). Nothing is sent until you click Send.";
       fuCount(); fuRender();
     });
@@ -2583,6 +2636,8 @@
       fu.upcoming = r.upcoming || [];
       $("fuCountUp").textContent = fu.upcoming.length;
       var why = fuWhy(r.counts);
+      if (r.reply_check && r.reply_check.replied) why = "✓ " + r.reply_check.replied + " lead" + (r.reply_check.replied === 1 ? "" : "s") + " replied by email, so their follow-ups stopped. " + why;
+      else if (r.reply_check && r.reply_check.note && fu.settings.reply_mode === "auto") why = "Automatic reply check: " + esc(r.reply_check.note) + ". " + why;
       if (r.created) fuStatus("✓ " + r.created + " new draft" + (r.created === 1 ? "" : "s") + " ready to review." + (r.due > r.created ? " More will be written next time." : "") + (why ? "<div class='fu-why'>" + why + "</div>" : ""), "ok");
       else if (r.errors && r.errors.length) fuStatus("Couldn't write drafts: " + esc(r.errors[0]), "err");
       else if (!quiet) fuStatus((fu.drafts.length ? "No new leads are due right now." : "No leads are due for a follow-up right now.") +
@@ -2605,7 +2660,7 @@
       "<div class='fu-head'>" +
         "<span class='fu-av'>" + esc(initials(who)) + "</span>" +
         "<div class='fu-who'><b>" + esc(who) + "</b><span>" + esc(contact) + "</span></div>" +
-        "<div class='fu-tags'><span class='fu-tag'>Step " + f.step + " of 3</span>" +
+        "<div class='fu-tags'><span class='fu-tag'>Follow-up " + f.step + " of " + fu.settings.steps + "</span>" +
           "<span class='fu-tag " + (wa ? "wa" : "em") + "'>" + (wa ? "WhatsApp" : "Email") + "</span>" +
           "<span class='fu-due'>" + esc(due) + "</span></div>" +
       "</div>" +
@@ -2620,6 +2675,7 @@
             : "<button class='btn btn-primary fu-send' type='button'>Send email</button>") +
         "<button class='btn btn-ghost fu-rewrite' type='button'>Rewrite…</button>" +
         "<span class='fu-spacer'></span>" +
+        "<button class='fu-link fu-replied' type='button'>They replied</button>" +
         "<button class='fu-link fu-skip' type='button'>Skip this step</button>" +
         "<button class='fu-link danger fu-stop' type='button'>Stop follow-ups</button>" +
       "</div>" +
@@ -2629,12 +2685,14 @@
   function fuHistoryRow(f) {
     var who = f.lead_name || f.lead_email || f.lead_phone || "Lead";
     var label = { sent: "Sent", skipped: "Skipped", stopped: "Stopped", failed: "Failed" }[f.status] || f.status;
+    var repliedTag = f.replied_at ? "<span class='fu-hst replied'>Replied</span>" : "";
     return "<details class='fu-hist'><summary>" +
-      "<span class='fu-hst " + esc(f.status) + "'>" + esc(label) + "</span>" +
+      "<span class='fu-hst " + esc(f.status) + "'>" + esc(label) + "</span>" + repliedTag +
       "<b>" + esc(who) + "</b><span class='fu-hmeta'>Step " + f.step + " · " + (f.channel === "whatsapp" ? "WhatsApp" : "Email") +
       (f.sent_by ? " · " + esc(f.sent_by) : "") + " · " + esc(fuRel(f.sent_at || f.updated_at)) + "</span></summary>" +
       (f.subject ? "<div class='fu-hsub'>" + esc(f.subject) + "</div>" : "") +
-      "<div class='fu-hbody'>" + esc(f.body || "").replace(/\n/g, "<br>") + "</div></details>";
+      "<div class='fu-hbody'>" + esc(f.body || "").replace(/\n/g, "<br>") + "</div>" +
+      (f.replied_at ? "<div class='fu-hsub'>" + esc(f.replied_note || "Replied") + " · " + esc(fuRel(f.replied_at)) + "</div>" : "") + "</details>";
   }
   function fuRender() {
     document.querySelectorAll("[data-futab]").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-futab") === fu.tab); });
@@ -2644,9 +2702,11 @@
         var who = u.name || u.email || u.phone || "Lead";
         return "<div class='fu-up'><span class='fu-av'>" + esc(initials(who)) + "</span>" +
           "<div class='fu-who'><b>" + esc(who) + "</b><span>" + esc(u.email || u.phone) + (u.need ? " · " + esc(u.need) : "") + "</span></div>" +
-          "<span class='fu-tag'>Step " + u.step + " of 3</span><span class='fu-tag " + (u.channel === "whatsapp" ? "wa" : "em") + "'>" + (u.channel === "whatsapp" ? "WhatsApp" : "Email") + "</span>" +
-          "<span class='fu-hmeta'>Due " + esc(fuRel(u.due_at)) + "</span>" +
-          "<button class='btn btn-ghost fu-now' type='button' data-session='" + esc(u.session_id) + "'>Write now</button></div>";
+          "<span class='fu-tag'>Follow-up " + u.step + " of " + (u.total || fu.settings.steps) + "</span><span class='fu-tag " + (u.channel === "whatsapp" ? "wa" : "em") + "'>" + (u.channel === "whatsapp" ? "WhatsApp" : "Email") + "</span>" +
+          "<label class='fu-due-edit' title='Change when this follow-up is due'>Due" + (u.custom ? " (custom)" : "") +
+            "<input type='date' class='fu-date' data-session='" + esc(u.session_id) + "' value='" + esc(fuDateValue(u.due_at)) + "'></label>" +
+          "<button class='btn btn-ghost fu-now' type='button' data-session='" + esc(u.session_id) + "'>Write now</button>" +
+          "<button class='fu-link fu-up-replied' type='button' data-session='" + esc(u.session_id) + "'>They replied</button></div>";
       }).join("") + "</div>"
         : "<div class='card'><div class='empty'><b>Nothing upcoming</b>Leads appear here while they wait for their next follow-up. Click <b>Find leads to follow up</b> to check.</div></div>";
       return;
@@ -2675,10 +2735,59 @@
     });
   }
   $("fuRefresh").addEventListener("click", function () { fuFind(false); });
+  function fuFillSettings() {
+    var st = fu.settings;
+    $("fuSteps").value = String(st.steps);
+    $("fuDay1").value = st.days[0]; $("fuDay2").value = st.days[1]; $("fuDay3").value = st.days[2];
+    document.querySelectorAll("input[name=fuReply]").forEach(function (r) { r.checked = r.value === st.reply_mode; });
+    fuStepRows();
+  }
+  function fuStepRows() {
+    var n = parseInt($("fuSteps").value, 10) || 3;
+    document.querySelectorAll(".fu-row[data-step]").forEach(function (r) { r.classList.toggle("hidden", parseInt(r.getAttribute("data-step"), 10) > n); });
+  }
+  $("fuSteps").addEventListener("change", fuStepRows);
+  $("fuSetBtn").addEventListener("click", function () {
+    var open = $("fuSettings").classList.toggle("hidden") === false;
+    this.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) { fuFillSettings(); $("fuSetMsg").textContent = ""; }
+  });
+  $("fuSettings").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var mode = (document.querySelector("input[name=fuReply]:checked") || {}).value || "team";
+    var body = { action: "save_settings", settings: { steps: parseInt($("fuSteps").value, 10), days: [$("fuDay1").value, $("fuDay2").value, $("fuDay3").value].map(Number), reply_mode: mode } };
+    $("fuSetSave").disabled = true; $("fuSetMsg").className = "fu-msg"; $("fuSetMsg").textContent = "Saving…";
+    adminFetch(FU, body).then(function (r) {
+      if (!r) return;
+      fu.settings = r.settings; $("fuSetMsg").className = "fu-msg ok"; $("fuSetMsg").textContent = "✓ Saved. Due dates are updated.";
+      fu.refreshedAt = 0; fuFind(true);
+    }).catch(function (err) { $("fuSetMsg").className = "fu-msg err"; $("fuSetMsg").textContent = err.message; })
+      .then(function () { $("fuSetSave").disabled = false; });
+  });
   document.querySelectorAll("[data-futab]").forEach(function (b) {
     b.addEventListener("click", function () { fu.tab = b.getAttribute("data-futab"); fuRender(); });
   });
+  $("fuList").addEventListener("change", function (e) {
+    var inp = e.target.closest(".fu-date"); if (!inp || !inp.value) return;
+    var at = new Date(inp.value + "T10:00:00");   // 10 am local time on the chosen day
+    adminFetch(FU, { action: "reschedule", session_id: inp.getAttribute("data-session"), due_at: at.toISOString() }).then(function (r) {
+      if (!r) return;
+      fu.upcoming.forEach(function (u) { if (u.session_id === inp.getAttribute("data-session")) { u.due_at = at.toISOString(); u.custom = true; } });
+      fuRender(); fuStatus("✓ Due date changed to " + at.toLocaleDateString() + ".", "ok");
+    }).catch(function (err) { alert(err.message); });
+  });
   $("fuList").addEventListener("click", function (e) {
+    var upRep = e.target.closest(".fu-up-replied");
+    if (upRep) {
+      if (!confirm("Mark this lead as replied? Their follow-ups will stop.")) return;
+      upRep.disabled = true;
+      adminFetch(FU, { action: "replied", session_id: upRep.getAttribute("data-session") }).then(function (r) {
+        if (!r) return;
+        fu.upcoming = fu.upcoming.filter(function (u) { return u.session_id !== upRep.getAttribute("data-session"); });
+        $("fuCountUp").textContent = fu.upcoming.length; fuRender(); fuStatus("✓ Marked as replied. No more follow-ups for this lead.", "ok");
+      }).catch(function (err) { upRep.disabled = false; alert(err.message); });
+      return;
+    }
     var now = e.target.closest(".fu-now");
     if (now) {
       now.disabled = true; now.textContent = "Writing…";
@@ -2718,6 +2827,9 @@
         f.subject = r.subject; f.body = r.body;
         card.querySelectorAll("button").forEach(function (b) { b.disabled = false; });
       });
+    } else if (e.target.closest(".fu-replied")) {
+      if (!confirm((f.lead_name || "This lead") + " replied? Their follow-ups will stop.")) return;
+      fuAct(card, { action: "replied", session_id: f.session_id }, "✓ Marked as replied. No more follow-ups.").then(done);
     } else if (e.target.closest(".fu-skip")) {
       fuAct(card, { action: "skip", id: id }, "Skipped. The next step is scheduled.").then(done);
     } else if (e.target.closest(".fu-stop")) {

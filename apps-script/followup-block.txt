@@ -1,12 +1,35 @@
-    // ---- Follow-up emails from the dashboard (paste right after the "handoff" block) ----
+    // ---- Follow-up emails from the dashboard (full-width formatted email) ----
     if (d.type === "followup") {
       if (!d.to) return out("error: missing to");
-      MailApp.sendEmail({
-        to: d.to,
-        subject: d.subject || "Following up from DigitalRYZE",
-        body: d.body || "",
-        name: d.from_name || "DigitalRYZE",
-        replyTo: d.reply_to || NOTIFY_EMAIL
-      });
+      var esc = function (t) { return String(t || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+      var linkify = function (t) {
+        return t.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" style="color:#4262F0">$1</a>')
+                .replace(/(^|[\s(])(digitalryze\.com)(?=[\s).,]|$)/g, '$1<a href="https://digitalryze.com" style="color:#4262F0">$2</a>');
+      };
+      var html = '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1b2338">' +
+        esc(d.body).split(/\n{2,}/).map(function (p) {
+          return '<p style="margin:0 0 14px">' + linkify(p).replace(/\n/g, "<br>") + "</p>";
+        }).join("") + "</div>";
+      var opts = { to: d.to, subject: d.subject || "Following up from DigitalRYZE", body: d.body || "", htmlBody: html, name: d.from_name || "DigitalRYZE" };
+      if (d.reply_to) opts.replyTo = d.reply_to;   // empty = replies come back to this Gmail account, where they can be detected
+      MailApp.sendEmail(opts);
       return out("followup-sent");
+    }
+
+    // ---- Which leads replied to a follow-up? (searches this Gmail account) ----
+    if (d.type === "followup_replies") {
+      var found = [];
+      (d.items || []).slice(0, 40).forEach(function (it) {
+        if (!it || !it.email || !it.since) return;
+        var since = new Date(it.since);
+        var after = Utilities.formatDate(since, "GMT", "yyyy/MM/dd");
+        var threads = GmailApp.search('from:' + it.email + ' after:' + after, 0, 10);
+        var hit = threads.some(function (t) {
+          return t.getMessages().some(function (m) {
+            return m.getDate() > since && m.getFrom().toLowerCase().indexOf(String(it.email).toLowerCase()) >= 0;
+          });
+        });
+        if (hit) found.push(it.email);
+      });
+      return ContentService.createTextOutput(JSON.stringify({ ok: true, replied: found })).setMimeType(ContentService.MimeType.JSON);
     }

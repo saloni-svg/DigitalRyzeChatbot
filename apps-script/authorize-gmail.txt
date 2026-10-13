@@ -1,0 +1,5 @@
+// Paste at the very bottom of Code.gs, then run it once (select it in the toolbar and click Run)
+// so Google asks for permission to read this Gmail account (needed to detect replies).
+function authorizeGmail() {
+  GmailApp.getInboxUnreadCount();
+}
