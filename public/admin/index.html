@@ -832,8 +832,8 @@
   .ask-btn span{flex:1}
   .ask-btn kbd{font:inherit;font-size:11px;font-weight:700;background:rgba(255,255,255,.14);border-radius:6px;padding:2px 6px;color:#DDE5FF}
   .ask-btn + .navbottom{margin-top:10px}
-  .ask-overlay{position:fixed;inset:0;z-index:90;background:rgba(10,16,32,.45);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 16px}
-  .ask-box{width:min(760px,100%);max-height:88vh;display:flex;flex-direction:column;background:var(--card);border-radius:18px;box-shadow:0 30px 80px -20px rgba(10,16,32,.55);overflow:hidden}
+  .ask-overlay{position:fixed;inset:0;z-index:90;background:rgba(10,16,32,.45);display:flex;align-items:flex-start;justify-content:center;padding:4vh 24px 24px}
+  .ask-box{width:min(1040px,100%);height:min(88vh,980px);max-height:92vh;display:flex;flex-direction:column;background:var(--card);border-radius:18px;box-shadow:0 30px 80px -20px rgba(10,16,32,.55);overflow:hidden}
   .ask-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
   .ask-head h2{margin:0;font-size:17px;color:var(--ink)}
   .ask-head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
@@ -841,13 +841,13 @@
   .ask-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2F5BFF,#7C4DFF);flex:none}
   .ask-new{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--text)}
   .ask-head .x{border:0;background:var(--paper);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
-  .ask-thread{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:220px;background:#FAFBFD}
+  .ask-thread{flex:1;overflow-y:auto;padding:22px 24px;display:flex;flex-direction:column;gap:12px;min-height:220px;background:#FAFBFD}
   .ask-empty p{margin:0 0 10px;color:var(--muted);font-size:13.5px}
   .ask-ex{display:flex;flex-wrap:wrap;gap:8px}
   .ask-ex button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font:inherit;font-size:13px;color:var(--text);cursor:pointer;text-align:left}
   .ask-ex button:hover{border-color:var(--accent);color:var(--accent)}
   .ask-q{align-self:flex-end;max-width:85%;background:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;white-space:pre-wrap}
-  .ask-a{align-self:stretch;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14px;line-height:1.55;color:var(--text)}
+  .ask-a{align-self:stretch;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;font-size:14.5px;line-height:1.55;color:var(--text)}
   .ask-a p{margin:0 0 8px}.ask-a p:last-child{margin-bottom:0}
   .ask-a ul,.ask-a ol{margin:4px 0 8px;padding-left:20px}
   .ask-a code{background:var(--paper);border-radius:5px;padding:1px 5px;font-size:12.5px}
@@ -878,13 +878,13 @@
   .ask-act.failed{background:#FDF2F2;border-color:#F5C2C2}.ask-act.failed b{color:#B42318}
   .ask-tools{margin-top:8px;font-size:11.5px;color:var(--faint)}
   .ask-form{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line);background:#fff;align-items:flex-end}
-  .ask-form textarea{flex:1;resize:none;min-height:44px;max-height:140px;font:inherit;font-size:14px;line-height:1.45;padding:11px 12px}
+  .ask-form textarea{flex:1;resize:none;min-height:52px;max-height:140px;font:inherit;font-size:14px;line-height:1.45;padding:11px 12px}
   .ask-form .btn-primary{width:auto;background:var(--accent);padding:11px 18px}
   .ask-foot{padding:0 16px 10px;font-size:11.5px;color:var(--faint);background:#fff}
   body.ask-on{overflow:hidden}
   @media (max-width:600px){
     .ask-overlay{padding:0}
-    .ask-box{max-height:100vh;height:100%;border-radius:0}
+    .ask-box{max-height:100vh;height:100%;width:100%;border-radius:0}
     .ask-head p{display:none}
     .ask-btn kbd{display:none}
   }
