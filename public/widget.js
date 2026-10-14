@@ -94,6 +94,10 @@
     '.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}' +
     '@keyframes b{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}' +
     '@media (prefers-reduced-motion:reduce){.typing i{animation:none;opacity:.6}}' +
+    '.agent-typing{align-self:flex-start;font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:8px;padding:2px 4px}' +
+    '.agent-typing .dots{display:inline-flex;gap:3px}' +
+    '.agent-typing .dots i{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:b 1.2s infinite}' +
+    '.agent-typing .dots i:nth-child(2){animation-delay:.2s}.agent-typing .dots i:nth-child(3){animation-delay:.4s}' +
     '.form{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line);background:#fff}' +
     '.form textarea{flex:1;resize:none;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14.5px;' +
       'line-height:1.4;max-height:110px;color:var(--ink);outline:none}' +
@@ -246,6 +250,26 @@
       chips.appendChild(b);
     });
   }
+  // Team member typing in a live chat: show a small "Zafar is typing…" line.
+  function agentTypingNote(name) {
+    var t = log.querySelector(".agent-typing");
+    if (name && !t) {
+      t = document.createElement("div");
+      t.className = "agent-typing";
+      t.setAttribute("aria-live", "polite");
+      log.appendChild(t);
+    }
+    if (name) { t.innerHTML = "<span class='dots'><i></i><i></i><i></i></span> " + String(name).replace(/[<>&"]/g, "") + " is typing…"; log.scrollTop = log.scrollHeight; }
+    else if (t) t.remove();
+  }
+  // Visitor typing in a live chat: tell the team (at most every 3 s).
+  var lastTypingPing = 0;
+  function visitorTyping() {
+    if (state.handoff !== "live" || Date.now() - lastTypingPing < 3000) return;
+    lastTypingPing = Date.now();
+    fetch(LIVE_API, { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "typing", session: state.sessionId }) }).catch(function () {});
+  }
   function typing(on) {
     var t = log.querySelector(".typing");
     if (on && !t) {
@@ -342,6 +366,7 @@
     fetch(LIVE_API + "?session=" + encodeURIComponent(state.sessionId) + "&after=" + state.liveAfter)
       .then(function (r) { return r.json(); })
       .then(function (d) {
+        agentTypingNote(state.handoff === "live" ? d.agent_typing : "");
         (d.messages || []).forEach(function (m) {
           if (m.id <= state.liveAfter) return; // already shown (two checks overlapped)
           state.liveAfter = Math.max(state.liveAfter, m.id);
@@ -424,6 +449,7 @@
   };
   form.onsubmit = function (e) { e.preventDefault(); send(input.value); };
   input.addEventListener("input", autosize);
+  input.addEventListener("input", function () { if (input.value.trim()) visitorTyping(); });
   input.addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input.value); }
   });

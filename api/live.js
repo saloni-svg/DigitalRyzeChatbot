@@ -4,6 +4,7 @@
 import { supa, enc, cors } from "../lib/db.js";
 import { looksLikeContact, captureLiveLead } from "../lib/livelead.js";
 import { inBackground } from "../lib/background.js";
+import { touch, agentTyping } from "../lib/presence.js";
 
 export default async function handler(req, res) {
   const ok = cors(req, res, "GET, POST, OPTIONS");
@@ -24,13 +25,20 @@ export default async function handler(req, res) {
         db.get(`live_messages?select=id,role,content,created_at&session_id=eq.${enc(session)}&id=gt.${after}&order=id.asc`)
       ]);
       const row = (rows || [])[0] || {};
-      return res.status(200).json({ status: row.handoff_status || null, agent: row.agent_name || "", messages: messages || [] });
+      const typing = row.handoff_status === "accepted" ? await agentTyping(db, session).catch(() => "") : "";
+      return res.status(200).json({ status: row.handoff_status || null, agent: row.agent_name || "", messages: messages || [], agent_typing: typing });
     }
 
     if (req.method === "POST") {
       const body = typeof req.body === "string" ? JSON.parse(req.body) : (req.body || {});
       const session = String(body.session || "").slice(0, 64);
       if (!session) return res.status(400).json({ error: "Missing session" });
+
+      // The visitor is typing (sent every few seconds while they type in a live chat).
+      if (body.action === "typing") {
+        await touch(db, { session_id: session, user_id: "visitor", name: "Visitor", typing: body.typing !== false }).catch(() => {});
+        return res.status(200).json({ ok: true });
+      }
 
       if (body.action === "timeout") {
         await db.patch("chats", `session_id=eq.${enc(session)}&handoff_status=eq.requested`, { handoff_status: "missed" });

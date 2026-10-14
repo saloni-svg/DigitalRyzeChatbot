@@ -804,6 +804,14 @@
   .oc-log ol{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
 
   .nav .count.late-count,.nav a .count.late-count{background:#E5484D;color:#fff}
+
+  /* who's on this chat right now */
+  .presence{margin:4px 0 0;font-size:12.5px;color:#3346B0}
+  .presence b{font-weight:700;color:#B76E00}
+  .presence b.vt{color:#0F7B4E}
+  .typing-warn{margin:0 16px 8px;padding:8px 12px;border-radius:10px;background:#FFF4E0;border:1px solid #F5D39A;color:#8A5300;font-size:13px}
+  .badge.viewing{background:#EAF4FF;color:#1D5FB8}
+  .badge.viewing i{background:#2F80ED}
 </style>
 </head>
 <body>
@@ -1284,13 +1292,14 @@
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle">
   <div class="dhead">
     <div class="avatar" id="dAvatar">?</div>
-    <div class="t"><h2 id="dTitle">Conversation</h2><p id="dSub"></p></div>
+    <div class="t"><h2 id="dTitle">Conversation</h2><p id="dSub"></p><p id="dPresence" class="presence hidden"></p></div>
     <button class="endbtn" id="endBtn" type="button">End chat</button>
     <button class="x" id="dClose" aria-label="Close">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
   </div>
   <div class="dbody" id="dBody"></div>
+  <div class="typing-warn hidden" id="typingWarn"></div>
   <form class="composer" id="composer">
     <textarea class="input" id="reply" rows="1" placeholder="Type your reply to the visitor" aria-label="Reply"></textarea>
     <button class="btn btn-accept" type="submit">Send</button>
@@ -1870,6 +1879,7 @@
     renderThread(true);
     setLiveUi();
     pollDrawer();
+    presenceStart(drawer.id || c.session_id);
     $("dClose").focus();
   }
   function mlLine(c) { return c._ml ? "<span class='mlline' title='Predicted chance of becoming a client (ML model)'>\ud83e\udd16 " + Math.round(c._ml.p * 100) + "% win</span>" : ""; }
@@ -2137,6 +2147,7 @@
     ocDraft = null;
     $("scrim").classList.remove("on"); $("drawer").classList.remove("on");
     stopDrawerPoll(); drawer.id = null;
+    presenceStop();
   }
 
   // ---------- live chat (admin side) ----------
@@ -2246,6 +2257,7 @@
             drawer.after = Math.max(drawer.after, m.id); drawer.live.push(m);
           });
         }
+        showPresence(d.presence || [], !!d.visitor_typing);
         var was = drawer.status;
         drawer.status = d.status; drawer.agent = d.agent || drawer.agent;
         if ((d.messages || []).length || was !== d.status) renderThread(false);
@@ -2367,6 +2379,8 @@
           } catch (e) {}
         }
       }
+      var vk = JSON.stringify(d.viewers || {});
+      if (vk !== JSON.stringify(viewers)) { viewers = d.viewers || {}; if (curMain === "dash") apply(); }
       document.title = pending.length ? "(" + pending.length + ") Live request | " + baseTitle : baseTitle;
       renderAlerts(pending, active);
     }).catch(function () {}).then(function () { liveTimer = setTimeout(pollLive, 5000); });
@@ -2973,7 +2987,8 @@
     return String(c.assigned_to || "") === ownerF;
   }
   function ownerTags(c) {
-    var t = "", r = respOf(c);
+    var t = "", r = respOf(c), v = viewers[c.session_id];
+    if (v && v.length) t += "<span class='badge viewing' title='Has this chat open right now'><i></i>👀 " + esc(v.slice(0, 2).join(", ")) + (v.length > 2 ? " +" + (v.length - 2) : "") + "</span>";
     if (c.assigned_to) t += "<span class='badge owner" + (/^Needs attention/.test(c.assigned_reason || "") ? " attn" : "") + "' title='" + esc(c.assigned_reason || "Owner") + "'><i></i>" + esc(String(c.assigned_name || "Owner").split(" ")[0]) + "</span>";
     if (r && r.overdue) t += "<span class='badge overdue' title='No reply yet; the target is " + esc(fmtMin(team.settings.sla_minutes)) + "'><i></i>No reply " + esc(fmtMin(r.waiting_min)) + "</span>";
     return t;
@@ -3138,6 +3153,52 @@
       .then(function () { $("tsSave").disabled = false; });
   });
 
+
+  // ---------- who's on this chat right now ----------
+  var viewers = {}, pres = { session: null, timer: null, typingUntil: 0, lastSent: 0, sentTyping: false };
+  function presenceSend(extra) {
+    if (!pres.session) return;
+    var body = { action: "presence", session: pres.session };
+    for (var k in extra) body[k] = extra[k];
+    pres.lastSent = Date.now();
+    adminFetch(LIVE, body).catch(function () {});
+  }
+  function presenceStart(session) {
+    presenceStop();
+    pres.session = session; pres.sentTyping = false;
+    presenceSend({});
+    pres.timer = setInterval(function () {
+      var typing = Date.now() < pres.typingUntil;
+      if (pres.sentTyping && !typing) { pres.sentTyping = false; presenceSend({ typing: false }); }
+      else if (!document.hidden) presenceSend({});
+    }, 8000);
+  }
+  function presenceStop() {
+    if (pres.timer) { clearInterval(pres.timer); pres.timer = null; }
+    if (pres.session) presenceSend({ left: true });
+    pres.session = null;
+    $("dPresence").classList.add("hidden"); $("typingWarn").classList.add("hidden");
+  }
+  // While typing a reply: tell the others (at most every 2.5 s), and stop 5 s after the last key.
+  function presenceTyping() {
+    if (!pres.session) return;
+    pres.typingUntil = Date.now() + 5000;
+    if (!pres.sentTyping || Date.now() - pres.lastSent > 2500) { pres.sentTyping = true; presenceSend({ typing: true }); }
+  }
+  function showPresence(team, visitorTyping) {
+    var el = $("dPresence"), warn = $("typingWarn");
+    var typing = team.filter(function (p) { return p.typing; }).map(function (p) { return String(p.name).split(" ")[0]; });
+    var viewing = team.filter(function (p) { return !p.typing; }).map(function (p) { return String(p.name).split(" ")[0]; });
+    var parts = [];
+    if (viewing.length) parts.push("👀 " + esc(viewing.join(", ")) + (viewing.length === 1 ? " is" : " are") + " viewing");
+    if (typing.length) parts.push("<b>✍️ " + esc(typing.join(", ")) + (typing.length === 1 ? " is" : " are") + " typing a reply…</b>");
+    if (visitorTyping) parts.push("<b class='vt'>💬 Visitor is typing…</b>");
+    el.innerHTML = parts.join(" · ");
+    el.classList.toggle("hidden", !parts.length);
+    warn.textContent = typing.length ? "✍️ " + typing.join(", ") + (typing.length === 1 ? " is" : " are") + " typing a reply to this visitor. Check before you send, so they don't get two answers." : "";
+    warn.classList.toggle("hidden", !typing.length);
+  }
+
   // ---------- events ----------
   $("pwToggle").addEventListener("click", function () {
     var show = $("pw").type === "password";
@@ -3183,13 +3244,14 @@
       })
       .catch(function (err) { alert(err.message); $("reply").value = t; });
   });
+  $("reply").addEventListener("input", function () { if (this.value.trim()) presenceTyping(); });
   $("reply").addEventListener("keydown", function (e) {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("composer").requestSubmit(); }
   });
   $("endBtn").addEventListener("click", function () {
     if (!drawer.id || !confirm("End this live chat? The AI assistant will take over again.")) return;
     adminFetch(LIVE, { action: "end", session: drawer.id, agent: drawer.agent })
-      .then(function () { stopDrawerPoll(); pollDrawer(); pollLive(); load(); })
+      .then(function () { pres.typingUntil = 0; if (pres.sentTyping) { pres.sentTyping = false; presenceSend({ typing: false }); } stopDrawerPoll(); pollDrawer(); pollLive(); load(); })
       .catch(function (err) { alert(err.message); });
   });
   $("refreshBtn").addEventListener("click", function () { load(); });
