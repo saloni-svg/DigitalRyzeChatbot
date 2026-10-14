@@ -746,6 +746,62 @@
   .fu-hst.replied{background:#E8F0FF;color:#2449DB}
 
   .mlbadge.preview{background:#FFF1D6;color:#8A5300}
+
+  /* team assignment and response times */
+  .badge.owner{background:#EEF2FF;color:#3346B0}
+  .badge.owner i{background:#5B6CF0}
+  .badge.overdue{background:#FDECEC;color:#B42318}
+  .badge.overdue i{background:#E5484D}
+  .ownercard{padding:14px 16px}
+  .oc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .oc-row label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .oc-row select{flex:1 1 180px;min-width:0}
+  .oc-row .btn{padding:8px 12px;font-size:13px}
+  .oc-why{margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .oc-resp{margin-top:8px}
+  .resp{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 10px}
+  .resp.ok{background:#E3F6EC;color:#0F7B4E}
+  .resp.wait{background:#FFF1D6;color:#8A5300}
+  .resp.late{background:#FDECEC;color:#B42318}
+  .oc-msg{font-size:12.5px;color:#B42318;margin-top:6px}
+  .mybar{display:flex;align-items:center;gap:10px 14px;flex-wrap:wrap;background:#fff;border:1px solid var(--line);border-left:4px solid #5B6CF0;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:14px}
+  .mybar .btn{padding:6px 12px;font-size:13px}
+  .late{color:#B42318}
+  .team-settings{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:0 0 16px;background:#FAFBFD}
+  .ts-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line-2);font-size:14px;flex-wrap:wrap}
+  .ts-row select.input{width:auto;min-width:240px}
+  .ts-sla{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:13.5px}
+  .ts-sla input{width:90px;text-align:center}
+  .ts-members #tsMembers{display:flex;gap:6px 16px;flex-wrap:wrap}
+  .ts-members label{display:inline-flex;align-items:center;gap:6px;font-size:13.5px}
+  .ts-actions{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .ts-actions .btn-primary{width:auto;background:var(--accent)}
+  table.team-stats{width:100%;border-collapse:collapse;font-size:13.5px}
+  .team-stats th{text-align:left;font-size:12px;color:var(--muted);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line)}
+  .team-stats td{padding:9px 10px;border-bottom:1px solid var(--line-2)}
+
+  /* priority order and handover */
+  .prio-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;min-width:min(380px,100%);counter-reset:pr}
+  .prio-list li{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 10px}
+  .prio-list .pnum{counter-increment:pr;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:12px;font-weight:800;display:grid;place-items:center;flex:none}
+  .prio-list .pnum::before{content:counter(pr)}
+  .prio-list label{flex:1;display:flex;align-items:center;gap:8px;font-size:13.5px;min-width:0}
+  .prio-list .dot{width:8px;height:8px;border-radius:50%;background:#CBD3E3;flex:none}
+  .prio-list .dot.on{background:#12B76A}
+  .prio-list .pmove{display:flex;gap:4px}
+  .prio-list .pmove button{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font-weight:800;color:var(--muted)}
+  .prio-list .pmove button:hover{color:var(--ink);border-color:#CBD3E3}
+  .ts-members>span em{display:block;font-style:normal;font-size:12.5px;color:var(--muted);margin-top:3px;max-width:320px}
+  .ts-members{align-items:flex-start}
+  .ts-switch{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600}
+  .ts-esc.off{opacity:.45;pointer-events:none}
+  .req-owner{display:block;margin-top:3px;font-size:12.5px;font-weight:700;color:#3346B0}
+  .req-owner.mine{color:#B42318}
+  .oc-why.attn,.badge.owner.attn{color:#B42318}
+  .badge.owner.attn{background:#FDECEC}
+  .oc-log{margin-top:8px;font-size:12.5px;color:var(--muted)}
+  .oc-log summary{cursor:pointer;font-weight:700;color:var(--text)}
+  .oc-log ol{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
 </style>
 </head>
 <body>
@@ -890,6 +946,7 @@
       <div class="stat"><div class="k">Avg. messages</div><div class="v" id="sAvg">0</div><div class="s">Per conversation</div></div>
     </div>
 
+    <div class="mybar hidden" id="myBar"></div>
     <div class="card tcard">
       <div class="toolbar">
         <div class="tb-tabs">
@@ -913,6 +970,7 @@
             <option value="contacted">Contacted</option><option value="meeting">Meeting booking</option><option value="proposal">Proposal sent</option>
             <option value="won">Won</option><option value="lost">Lost</option>
           </select>
+          <select class="fsel" id="ownerSel" aria-label="Filter by owner"><option value="">Any owner</option><option value="me">Assigned to me</option><option value="none">Unassigned</option><option value="overdue">Overdue replies</option></select>
           <select class="fsel" id="strengthSel" aria-label="Filter by intent strength">
             <option value="">Any strength</option>
             <option value="4">4 Ready to talk/buy</option>
@@ -1027,6 +1085,25 @@
           <p class="mlabel" style="margin-top:18px">Readiness for predictive ML (Step 6)</p>
           <div class="ready"><i id="ocReadyBar" style="width:0%"></i></div>
           <p class="note" id="ocReadyTxt"></p>
+        </section>
+        <section class="card pad incard" id="teamCard">
+          <div class="sechead" style="margin-bottom:8px">
+            <div><h3>Team: assignment and response times</h3>
+              <p class="note" style="margin:4px 0 0">How fast the team answers new leads, and who handles what.</p></div>
+            <button class="btn btn-ghost hidden" type="button" id="teamSetBtn">Assignment settings</button>
+          </div>
+          <form class="team-settings hidden" id="teamSettings">
+            <div class="ts-row"><span>Assign new leads automatically</span>
+              <select class="input" id="tsMode"><option value="off">Off (assign by hand)</option><option value="priority">Priority order (top of the list first)</option><option value="round_robin">Take turns</option><option value="smart">Smart (learns who wins which leads)</option></select></div>
+            <div class="ts-row"><span>Reply target</span><span class="ts-sla"><input class="input" type="number" min="5" max="10080" id="tsSla"> minutes after a lead arrives</span></div>
+            <div class="ts-row ts-members"><span>Who handles leads, in priority order<em>Use ↑ ↓ to set the order. Untick someone to leave them out. A green dot means they have the dashboard open now.</em></span><ol id="tsMembers" class="prio-list"></ol></div>
+            <div class="ts-row"><span>Pass to the next person when there's no answer</span><label class="ts-switch"><input type="checkbox" id="tsEsc"> On</label></div>
+            <div class="ts-row ts-esc"><span>Live chat request</span><span class="ts-sla">next person after <input class="input" type="number" min="15" max="600" id="tsLive"> seconds</span></div>
+            <div class="ts-row ts-esc"><span>New lead</span><span class="ts-sla">next person if no reply within the reply target</span></div>
+            <div class="ts-row ts-esc"><span>Stop after</span><span class="ts-sla"><input class="input" type="number" min="0" max="5" id="tsMax"> handovers, then flag "Needs attention"</span></div>
+            <div class="ts-actions"><button class="btn btn-primary" type="submit" id="tsSave">Save</button><span class="fu-msg" id="tsMsg"></span></div>
+          </form>
+          <div id="teamBody"><p class="note">Loading…</p></div>
         </section>
         <section class="card pad incard">
           <div class="sechead" style="margin-bottom:8px">
@@ -1423,6 +1500,7 @@
         if (!liveTimer) pollLive();
         runAnalyst();
         captureOldLiveLeads();
+        teamTick();
         if (!fu.refreshedAt) fuLoad().catch(function () {});
         if (!scoringLoaded) { scoringLoaded = true; loadScoring(); loadModel(); }
         if (!me) loadMe();
@@ -1473,6 +1551,7 @@
         if (filter === "qual" && !(c._score && c._score.is_qualified)) return false;
         if (filter === "todo" && !needsAction(c)) return false;
         if (!passOutcome(c)) return false;
+        if (!passOwner(c)) return false;
         if (filter === "lead" && !c._leads.length) return false;
         if (filter === "browse" && c._leads.length) return false;
         if (!q) return true;
@@ -1485,6 +1564,7 @@
       rows = leads.filter(function (l) {
         if (!passIntent(l._chat && l._chat._analysis)) return false;
         if (l._chat && !passOutcome(l._chat)) return false;
+        if (ownerF && !(l._chat && passOwner(l._chat))) return false;
         if (!q) return true;
         return [l.name, l.email, l.phone, l.business, l.requirement, l.service, l.page].join(" ").toLowerCase().indexOf(q) !== -1;
       });
@@ -1683,7 +1763,7 @@
     var status = (wa ? "<span class='badge wa'><i></i>WhatsApp</span>" : "") + hand + qual + (c._leads.length > 1 ? "<span class='badge lead'><i></i>" + c._leads.length + " leads</span>"
       : c._leads.length ? "<span class='badge lead'><i></i>Lead captured</span>"
       : c._detected ? "<span class='badge browse'><i></i>Details shared</span>"
-      : "<span class='badge browse'><i></i>Browsing</span>") + partTag;
+      : "<span class='badge browse'><i></i>Browsing</span>") + partTag + ownerTags(c);
     var cls = c.handoff_status === "accepted" ? " class='is-live'" : c.handoff_status === "requested" ? " class='is-waiting'" : "";
     return "<tr data-chat='" + esc(c.session_id) + "' tabindex='0'" + cls + ">" +
       "<td>" + tWho(name, sub, !!first) + "</td>" +
@@ -1753,7 +1833,7 @@
     $("dSub").textContent = "Started " + full(c.created_at) + " · Last message " + full(c.updated_at);
 
     if (!ocDraft || ocDraft.key !== c.session_id) ocDraft = null;
-    var html = actionCard(c) + outcomeCard(c) + analysisCard(c) + scoreCard(c);
+    var html = ownerCard(c) + actionCard(c) + outcomeCard(c) + analysisCard(c) + scoreCard(c);
     c._leads.forEach(function (l, i) {
       html += "<div class='leadcard'><div class='lh'><b>Lead " + (i + 1) + (c._leads.length > 1 ? " of " + c._leads.length : "") +
         (l._auto ? " <span style='color:var(--muted);font-weight:600'>(contact details found in chat)</span>" : "") + "</b>" +
@@ -2224,6 +2304,14 @@
   }
   var lastAlerts = [[], []], curMain = "dash";
   function goBtn() { return curMain === "dash" && view === "chats" ? "" : "<button class='btn btn-ghost' data-act='go'>Go to dashboard</button>"; }
+  function reqOwnerLine(c) {
+    if (!c.assigned_to) return "";
+    var mine = String(c.assigned_to) === myTeamId();
+    var lim = team && team.settings && team.settings.escalate !== false ? (team.settings.live_seconds || 45) : 0;
+    var left = lim ? Math.max(0, lim - Math.round((Date.now() - new Date(c.assigned_at || c.handoff_at).getTime()) / 1000)) : 0;
+    return "<span class='req-owner" + (mine ? " mine" : "") + "'>" + (mine ? "Your turn: please accept" : "Assigned to " + esc(String(c.assigned_name || "").split(" ")[0])) +
+      (lim ? (left ? " · passes to the next person in " + left + " s" : " · passing to the next person…") : "") + "</span>";
+  }
   function renderAlerts(pending, active) {
     lastAlerts = [pending, active];
     var html = "";
@@ -2234,7 +2322,7 @@
     pending.forEach(function (c) {
       html += "<div class='req' data-req='" + esc(c.session_id) + "'><span class='pulse'></span><div class='info'>" +
         "<b>" + esc(nameOf(c)) + " wants to talk to a person</b>" +
-        "<span>Waiting " + esc(waited(c.handoff_at)) + " · \u201c" + esc(lastVisitorMsg(c)) + "\u201d</span></div>" +
+        "<span>Waiting " + esc(waited(c.handoff_at)) + " · \u201c" + esc(lastVisitorMsg(c)) + "\u201d</span>" + reqOwnerLine(c) + "</div>" +
         "<div class='btns'>" + goBtn() + "<button class='btn btn-decline' data-act='decline'>Decline</button>" +
         "<button class='btn btn-accept' data-act='accept'>Accept</button></div></div>";
     });
@@ -2254,8 +2342,10 @@
     adminFetch(LIVE).then(function (d) {
       if (!d) return;
       var pending = d.pending || [], active = d.active || [];
-      var fresh = pending.filter(function (c) { return !seenRequests[c.session_id]; });
-      pending.forEach(function (c) { seenRequests[c.session_id] = true; });
+      // Alert this person when a request is theirs (or nobody's), including when it is handed over to them.
+      var key = function (c) { return c.session_id + "|" + (c.assigned_to || ""); };
+      var fresh = pending.filter(function (c) { return !seenRequests[key(c)] && (!c.assigned_to || String(c.assigned_to) === myTeamId()); });
+      pending.forEach(function (c) { seenRequests[key(c)] = true; });
       if (fresh.length) {
         beep();
         if (window.Notification && Notification.permission === "granted") {
@@ -2843,6 +2933,176 @@
     }
   });
 
+
+  // ---------- Team: assignment and response times ----------
+  var TEAM = "/api/admin/team", team = null, ownerF = "", teamAssignRan = 0;
+  function myTeamId() { return team && team.me ? team.me.id : (me && me.owner ? "owner" : me ? String(me.id) : ""); }
+  function respOf(c) { return team && team.response ? team.response[c.session_id] : null; }
+  function fmtMin(m) {
+    if (m == null) return "";
+    if (m < 60) return m + " min";
+    if (m < 60 * 24) return Math.round(m / 6) / 10 + " h";
+    return Math.round(m / 144) / 10 + " d";
+  }
+  function passOwner(c) {
+    if (!ownerF) return true;
+    if (ownerF === "me") return String(c.assigned_to || "") === myTeamId();
+    if (ownerF === "none") return !c.assigned_to;
+    if (ownerF === "overdue") { var r = respOf(c); return !!(r && r.overdue); }
+    return String(c.assigned_to || "") === ownerF;
+  }
+  function ownerTags(c) {
+    var t = "", r = respOf(c);
+    if (c.assigned_to) t += "<span class='badge owner" + (/^Needs attention/.test(c.assigned_reason || "") ? " attn" : "") + "' title='" + esc(c.assigned_reason || "Owner") + "'><i></i>" + esc(String(c.assigned_name || "Owner").split(" ")[0]) + "</span>";
+    if (r && r.overdue) t += "<span class='badge overdue' title='No reply yet; the target is " + esc(fmtMin(team.settings.sla_minutes)) + "'><i></i>No reply " + esc(fmtMin(r.waiting_min)) + "</span>";
+    return t;
+  }
+  function ownerCard(c) {
+    var r = respOf(c);
+    if (!r && !c.assigned_to && !(c._leads && c._leads.length)) return "";
+    var isAdmin = team && team.me ? team.me.is_admin : (me && me.role === "admin");
+    var myId = myTeamId(), cur = String(c.assigned_to || "");
+    var opts = "<option value=''>Unassigned</option>";
+    var members = (team && team.members) || [];
+    if (isAdmin) opts += members.map(function (m) { return "<option value='" + esc(m.id) + "'" + (m.id === cur ? " selected" : "") + ">" + esc(m.name) + (m.id === myId ? " (you)" : "") + "</option>"; }).join("");
+    else {
+      opts += "<option value='" + esc(myId) + "'" + (cur === myId ? " selected" : "") + ">Me</option>";
+      if (cur && cur !== myId) opts += "<option value='" + esc(cur) + "' selected disabled>" + esc(c.assigned_name || "Someone else") + "</option>";
+    }
+    if (cur && !members.some(function (m) { return m.id === cur; }) && isAdmin) opts += "<option value='" + esc(cur) + "' selected>" + esc(c.assigned_name || "Owner") + "</option>";
+    var resp = !r ? "" : r.first_response_min != null
+      ? "<span class='resp ok'>First reply after " + esc(fmtMin(r.first_response_min)) + "</span>"
+      : r.waiting_min != null ? "<span class='resp " + (r.overdue ? "late" : "wait") + "'>" + (r.overdue ? "Overdue: " : "Waiting for a reply: ") + esc(fmtMin(r.waiting_min)) +
+          (team ? " (target " + esc(fmtMin(team.settings.sla_minutes)) + ")" : "") + "</span>" : "";
+    return "<div class='anacard ownercard'><div class='oc-row'><label for='ownerPick'>Owner</label>" +
+      "<select class='input' id='ownerPick' data-session='" + esc(c.session_id) + "'>" + opts + "</select>" +
+      (cur !== myId ? "<button type='button' class='btn btn-ghost' id='ownerMe' data-session='" + esc(c.session_id) + "'>Assign to me</button>" : "") + "</div>" +
+      (c.assigned_reason ? "<div class='oc-why" + (/^Needs attention/.test(c.assigned_reason) ? " attn" : "") + "'>" + esc(c.assigned_reason) + (c.assigned_at ? " · " + esc(full(c.assigned_at)) : "") + "</div>" : "") +
+      (Array.isArray(c.assign_log) && c.assign_log.length > 1 ? "<details class='oc-log'><summary>Handover history (" + c.assign_log.length + ")</summary><ol>" +
+        c.assign_log.map(function (x) { return "<li><b>" + esc(String(x.name || "").split(" ")[0]) + "</b> · " + esc(x.reason || "") + " · " + esc(full(x.at)) + "</li>"; }).join("") + "</ol></details>" : "") +
+      (resp ? "<div class='oc-resp'>" + resp + "</div>" : "") + "<div class='oc-msg' id='ownerMsg'></div></div>";
+  }
+  function assignChat(session, uid) {
+    $("ownerMsg") && ($("ownerMsg").textContent = "Saving…");
+    adminFetch(TEAM, { action: "assign", session_id: session, user_id: uid }).then(function (r) {
+      if (!r) return;
+      chats.forEach(function (c) {
+        if (c.session_id !== session) return;
+        c.assigned_to = r.assigned_to; c.assigned_name = r.assigned_name; c.assigned_at = r.assigned_to ? new Date().toISOString() : null;
+        c.assigned_reason = r.assigned_to ? (r.assigned_to === myTeamId() ? "Assigned to themselves" : "Assigned by " + ((me && me.first_name) || "an admin")) : null;
+      });
+      apply(); renderMyBar(); openChat(session);
+    }).catch(function (e) { if ($("ownerMsg")) $("ownerMsg").textContent = e.message; else alert(e.message); });
+  }
+  document.addEventListener("change", function (e) {
+    if (e.target && e.target.id === "ownerPick") assignChat(e.target.getAttribute("data-session"), e.target.value);
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("#ownerMe");
+    if (b) assignChat(b.getAttribute("data-session"), myTeamId());
+  });
+  function renderMyBar() {
+    var bar = $("myBar"); if (!bar || !team) return;
+    var mine = chats.filter(function (c) { return String(c.assigned_to || "") === myTeamId() && !(c._outcome && (c._outcome.stage === "won" || c._outcome.stage === "lost")); });
+    var late = mine.filter(function (c) { var r = respOf(c); return r && r.overdue; }).length;
+    var unassignedLate = chats.filter(function (c) { var r = respOf(c); return !c.assigned_to && r && r.overdue; }).length;
+    if (!mine.length && !unassignedLate) { bar.classList.add("hidden"); return; }
+    bar.classList.remove("hidden");
+    bar.innerHTML = (mine.length ? "<span><b>" + mine.length + "</b> open lead" + (mine.length === 1 ? "" : "s") + " assigned to you" + (late ? " · <b class='late'>" + late + " overdue</b>" : "") + "</span>" +
+        "<button type='button' class='btn btn-ghost' data-own='me'>Show mine</button>" : "") +
+      (unassignedLate ? "<span><b class='late'>" + unassignedLate + "</b> unassigned lead" + (unassignedLate === 1 ? "" : "s") + " waiting too long</span><button type='button' class='btn btn-ghost' data-own='overdue'>Show</button>" : "");
+  }
+  $("myBar").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-own]"); if (!b) return;
+    ownerF = b.getAttribute("data-own"); $("ownerSel").value = ownerF; page = 0; apply();
+  });
+  function fillOwnerFilter() {
+    var sel = $("ownerSel"), keep = sel.value;
+    while (sel.options.length > 4) sel.remove(4);
+    ((team && team.members) || []).forEach(function (m) { var o = document.createElement("option"); o.value = m.id; o.textContent = m.name; sel.appendChild(o); });
+    sel.value = keep;
+  }
+  function loadTeam() {
+    return adminFetch(TEAM).then(function (d) {
+      if (!d) return;
+      team = d; fillOwnerFilter(); renderMyBar(); apply(); renderTeam();
+      if (typeof lastAlerts !== "undefined" && lastAlerts && lastAlerts[0]) renderAlerts(lastAlerts[0], lastAlerts[1]);   // show handover countdowns
+    }).catch(function (e) { team = null; if ($("teamBody")) $("teamBody").innerHTML = "<p class='note' style='color:#B42318'>" + esc(e.message) + "</p>"; });
+  }
+  // On load and every 3 minutes: auto-assign new leads (if switched on), then refresh owners and response times.
+  function teamTick() {
+    var go = function () {
+      var p = Date.now() - teamAssignRan > 60000 ? adminFetch(TEAM, { action: "auto_assign" }).catch(function () { return null; }) : Promise.resolve(null);
+      teamAssignRan = Date.now();
+      p.then(function (r) { return r && r.assigned ? load(true) : null; }).then(loadTeam);
+    };
+    go();
+    if (!teamTick.timer) teamTick.timer = setInterval(function () { if (!document.hidden && getKey()) go(); }, 180000);
+  }
+  function renderTeam() {
+    if (!$("teamBody") || !team) return;
+    var st = team.stats, o = st.overall, sla = team.settings.sla_minutes;
+    $("teamSetBtn").classList.toggle("hidden", !team.me.is_admin);
+    var kpi = function (v, l) { return "<div class='kpi'><b>" + v + "</b><span>" + l + "</span></div>"; };
+    var fastNote = o.fast_decided + o.slow_decided >= 4 && o.win_rate_fast != null && o.win_rate_slow != null
+      ? "Leads answered within " + fmtMin(sla) + " were won <b>" + o.win_rate_fast + "%</b> of the time, slower ones <b>" + o.win_rate_slow + "%</b>."
+      : "Once more leads are won or lost, this compares the win rate of fast and slow replies.";
+    var modeTxt = { off: "off (assigned by hand)", priority: "on, priority order", round_robin: "on, taking turns", smart: "on, smart (learns who wins which leads)" }[team.settings.auto_assign] +
+      (team.settings.escalate !== false ? "; no answer passes to the next person (live chat after " + (team.settings.live_seconds || 45) + " s, leads after " + fmtMin(team.settings.sla_minutes) + ")" : "");
+    var rows = st.members.filter(function (m) { return m.assigned || team.members.some(function (x) { return x.id === m.user_id; }); }).map(function (m) {
+      return "<tr><td>" + esc(m.name) + "</td><td>" + m.assigned + "</td><td>" + (m.median_response_min != null ? esc(fmtMin(m.median_response_min)) : "–") + "</td><td>" +
+        (m.overdue ? "<b class='late'>" + m.overdue + "</b>" : "0") + "</td><td>" + m.won + " / " + m.lost + "</td><td>" + (m.win_rate != null ? m.win_rate + "%" : "–") + "</td></tr>";
+    }).join("");
+    $("teamBody").innerHTML =
+      "<div class='kpis'>" + kpi(o.median_response_min != null ? fmtMin(o.median_response_min) : "–", "Typical first reply (median)") +
+        kpi(o.responded ? Math.round(o.within_target / o.responded * 100) + "%" : "–", "Answered within " + fmtMin(sla)) +
+        kpi(chats.filter(function (c) { var r = respOf(c); return r && r.overdue; }).length, "Waiting too long right now") +
+        kpi(chats.filter(function (c) { return !c.assigned_to && (c._leads || []).length; }).length, "Leads without an owner") + "</div>" +
+      "<p class='note' style='margin:0 0 12px'>" + fastNote + " Auto-assignment is <b>" + esc(modeTxt) + "</b>.</p>" +
+      (rows ? "<div class='tablewrap'><table class='team-stats'><tr><th>Team member</th><th>Assigned</th><th>Typical first reply</th><th>Overdue</th><th>Won / Lost</th><th>Win rate</th></tr>" + rows + "</table></div>"
+            : "<p class='note'>No leads have been assigned yet.</p>");
+  }
+  $("teamSetBtn").addEventListener("click", function () {
+    var f = $("teamSettings"), open = f.classList.toggle("hidden") === false;
+    if (!open || !team) return;
+    var st = team.settings;
+    $("tsMode").value = st.auto_assign; $("tsSla").value = st.sla_minutes; $("tsMsg").textContent = "";
+    $("tsEsc").checked = st.escalate !== false; $("tsLive").value = st.live_seconds || 45; $("tsMax").value = st.max_handovers != null ? st.max_handovers : 2;
+    var sel = st.members, prio = st.priority || [];
+    var rank = function (id) { var i = prio.indexOf(id); return i === -1 ? 1e6 : i; };
+    var ordered = team.members.slice().sort(function (a, b) { return rank(a.id) - rank(b.id); });
+    $("tsMembers").innerHTML = ordered.map(function (m) {
+      return "<li data-id='" + esc(m.id) + "'><span class='pnum'></span><label><input type='checkbox' value='" + esc(m.id) + "'" + (!sel.length || sel.indexOf(m.id) !== -1 ? " checked" : "") + "> " +
+        esc(m.name) + "</label><i class='dot" + (m.online ? " on" : "") + "' title='" + (m.online ? "Dashboard open now" : "Not online") + "'></i>" +
+        "<span class='pmove'><button type='button' data-move='-1' aria-label='Move up'>↑</button><button type='button' data-move='1' aria-label='Move down'>↓</button></span></li>";
+    }).join("") || "<li class='note'>Add team members in Settings first.</li>";
+    syncEsc();
+  });
+  function syncEsc() { document.querySelectorAll(".ts-esc").forEach(function (r) { r.classList.toggle("off", !$("tsEsc").checked); }); }
+  $("tsEsc").addEventListener("change", syncEsc);
+  $("tsMembers").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-move]"); if (!b) return;
+    var li = b.closest("li"), dir = parseInt(b.getAttribute("data-move"), 10);
+    if (dir < 0 && li.previousElementSibling) li.parentNode.insertBefore(li, li.previousElementSibling);
+    if (dir > 0 && li.nextElementSibling) li.parentNode.insertBefore(li.nextElementSibling, li);
+  });
+  $("teamSettings").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var boxes = [].slice.call($("tsMembers").querySelectorAll("input[type=checkbox]"));
+    var chosen = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; });
+    var order = [].slice.call($("tsMembers").querySelectorAll("li[data-id]")).map(function (li) { return li.getAttribute("data-id"); });
+    var body = { action: "save_settings", settings: { auto_assign: $("tsMode").value, sla_minutes: Number($("tsSla").value) || 120,
+      members: chosen.length === boxes.length ? [] : chosen, priority: order, escalate: $("tsEsc").checked,
+      live_seconds: Number($("tsLive").value) || 45, max_handovers: Number($("tsMax").value) } };
+    $("tsSave").disabled = true; $("tsMsg").className = "fu-msg"; $("tsMsg").textContent = "Saving…";
+    adminFetch(TEAM, body).then(function (r) {
+      if (!r) return;
+      $("tsMsg").className = "fu-msg ok"; $("tsMsg").textContent = "✓ Saved";
+      teamAssignRan = 0; teamTick();
+    }).catch(function (err) { $("tsMsg").className = "fu-msg err"; $("tsMsg").textContent = err.message; })
+      .then(function () { $("tsSave").disabled = false; });
+  });
+
   // ---------- events ----------
   $("pwToggle").addEventListener("click", function () {
     var show = $("pw").type === "password";
@@ -2935,6 +3195,7 @@
   $("intentSel").innerHTML = "<option value=''>All intents</option>" + INTENTS.map(function (i) { return "<option>" + esc(i) + "</option>"; }).join("");
   $("intentSel").addEventListener("change", function (e) { intentF = e.target.value; page = 0; apply(); });
   $("strengthSel").addEventListener("change", function (e) { strengthF = e.target.value; page = 0; apply(); });
+  $("ownerSel").addEventListener("change", function (e) { ownerF = e.target.value; page = 0; apply(); });
   $("sortSel").addEventListener("change", function (e) { sortBy = e.target.value; page = 0; apply(); });
   $("outcomeSel").addEventListener("change", function (e) { outcomeF = e.target.value; page = 0; apply(); });
   $("monthSel").addEventListener("change", function (e) {
@@ -3085,6 +3346,7 @@
       industries: [countBy(an, industries), countBy(anPrev, industries)] };
   }
   function renderInsights() {
+    renderTeam();
     var st = insightStats(), p = st.p;
     var contacts = st.people.filter(function (c) { return c._score && c._score.is_contact; }).length;
     var leadsN = st.people.filter(function (c) { return c._score && c._score.is_lead; }).length;

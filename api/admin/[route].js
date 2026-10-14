@@ -12,9 +12,10 @@ import outcomes from "../../lib/admin/outcomes.js";
 import push from "../../lib/admin/push.js";
 import scoring from "../../lib/admin/scoring.js";
 import summary from "../../lib/admin/summary.js";
+import team from "../../lib/admin/team.js";
 import users from "../../lib/admin/users.js";
 
-const routes = { actions, analyze, calendar, chats, followups, insights, live, login, ml, outcomes, push, scoring, summary, users };
+const routes = { actions, analyze, calendar, chats, followups, insights, live, login, ml, outcomes, push, scoring, summary, team, users };
 
 export const config = { maxDuration: 60 };
 
