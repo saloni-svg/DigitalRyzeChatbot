@@ -1050,7 +1050,10 @@
           <div class="sechead" style="margin-bottom:8px">
             <div><h3>Assignment and response times</h3>
               <p class="note" style="margin:4px 0 0">Who handles which lead, and how fast the team answers.</p></div>
-            <button class="btn btn-ghost hidden" type="button" id="teamSetBtn">Assignment settings</button>
+            <div class="fu-topbtns">
+              <button class="btn btn-ghost hidden" type="button" id="teamFillBtn" title="Give past leads an owner: whoever accepted the live chat, changed the outcome or sent a follow-up">Fill in past owners</button>
+              <button class="btn btn-ghost hidden" type="button" id="teamSetBtn">Assignment settings</button>
+            </div>
           </div>
           <form class="team-settings hidden" id="teamSettings">
             <div class="ts-row"><span>Assign new leads automatically</span>
@@ -3063,6 +3066,7 @@
     if (!$("teamBody") || !team) return;
     var st = team.stats, o = st.overall, sla = team.settings.sla_minutes;
     $("teamSetBtn").classList.toggle("hidden", !team.me.is_admin);
+    $("teamFillBtn").classList.toggle("hidden", !team.me.is_admin);
     var kpi = function (v, l) { return "<div class='kpi'><b>" + v + "</b><span>" + l + "</span></div>"; };
     var fastNote = o.fast_decided + o.slow_decided >= 4 && o.win_rate_fast != null && o.win_rate_slow != null
       ? "Leads answered within " + fmtMin(sla) + " were won <b>" + o.win_rate_fast + "%</b> of the time, slower ones <b>" + o.win_rate_slow + "%</b>."
@@ -3082,6 +3086,17 @@
       (rows ? "<div class='tablewrap'><table class='team-stats'><tr><th>Team member</th><th>Assigned</th><th>Typical first reply</th><th>Overdue</th><th>Won / Lost</th><th>Win rate</th></tr>" + rows + "</table></div>"
             : "<p class='note'>No leads have been assigned yet.</p>");
   }
+  $("teamFillBtn").addEventListener("click", function () {
+    var btn = this; btn.disabled = true; btn.textContent = "Checking past activity…";
+    adminFetch(TEAM, { action: "backfill" }).then(function (r) {
+      if (!r) return;
+      alert(r.filled ? "Done: " + r.filled + " past lead" + (r.filled === 1 ? " now has an owner" : "s now have an owner") + ", based on who accepted the live chat, changed the outcome or sent a follow-up." +
+          (r.unmatched ? "\n\n" + r.unmatched + " lead(s) were handled by a name that doesn't match any team member (for example \"DigitalRyze team\"), so they stay unassigned." : "")
+        : "No past leads could be matched to a team member." + (r.unmatched ? " " + r.unmatched + " were handled under a name that isn't a team member (for example \"DigitalRyze team\")." : ""));
+      return load(true).then(loadTeam);
+    }).catch(function (e) { alert(e.message); })
+      .then(function () { btn.disabled = false; btn.textContent = "Fill in past owners"; });
+  });
   $("teamSetBtn").addEventListener("click", function () {
     var f = $("teamSettings"), open = f.classList.toggle("hidden") === false;
     if (!open || !team) return;
