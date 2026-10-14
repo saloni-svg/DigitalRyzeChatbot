@@ -1,6 +1,7 @@
 // One serverless function for every /api/admin/... endpoint (keeps the project within Vercel Hobby's 12-function limit).
 import actions from "../../lib/admin/actions.js";
 import analyze from "../../lib/admin/analyze.js";
+import assistant from "../../lib/admin/assistant.js";
 import calendar from "../../lib/admin/calendar.js";
 import chats from "../../lib/admin/chats.js";
 import followups from "../../lib/admin/followups.js";
@@ -15,7 +16,7 @@ import summary from "../../lib/admin/summary.js";
 import team from "../../lib/admin/team.js";
 import users from "../../lib/admin/users.js";
 
-const routes = { actions, analyze, calendar, chats, followups, insights, live, login, ml, outcomes, push, scoring, summary, team, users };
+const routes = { actions, analyze, assistant, calendar, chats, followups, insights, live, login, ml, outcomes, push, scoring, summary, team, users };
 
 export const config = { maxDuration: 60 };
 

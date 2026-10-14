@@ -812,6 +812,70 @@
   .typing-warn{margin:0 16px 8px;padding:8px 12px;border-radius:10px;background:#FFF4E0;border:1px solid #F5D39A;color:#8A5300;font-size:13px}
   .badge.viewing{background:#EAF4FF;color:#1D5FB8}
   .badge.viewing i{background:#2F80ED}
+
+  /* ---------- Ask your dashboard ---------- */
+  .ask-btn{display:flex;align-items:center;gap:10px;width:100%;margin-top:auto;padding:11px 12px;border-radius:12px;border:1px solid rgba(157,180,255,.35);
+    background:linear-gradient(135deg,rgba(47,91,255,.35),rgba(124,77,255,.28));color:#fff;font:inherit;font-weight:700;font-size:14px;cursor:pointer;text-align:left}
+  .ask-btn:hover{background:linear-gradient(135deg,rgba(47,91,255,.5),rgba(124,77,255,.4))}
+  .ask-btn span{flex:1}
+  .ask-btn kbd{font:inherit;font-size:11px;font-weight:700;background:rgba(255,255,255,.14);border-radius:6px;padding:2px 6px;color:#DDE5FF}
+  .ask-btn + .navbottom{margin-top:10px}
+  .ask-overlay{position:fixed;inset:0;z-index:90;background:rgba(10,16,32,.45);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 16px}
+  .ask-box{width:min(760px,100%);max-height:88vh;display:flex;flex-direction:column;background:var(--card);border-radius:18px;box-shadow:0 30px 80px -20px rgba(10,16,32,.55);overflow:hidden}
+  .ask-head{display:flex;align-items:center;gap:12px;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .ask-head h2{margin:0;font-size:17px;color:var(--ink)}
+  .ask-head p{margin:2px 0 0;font-size:12.5px;color:var(--muted)}
+  .ask-head>div{flex:1;min-width:0}
+  .ask-ico{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#2F5BFF,#7C4DFF);flex:none}
+  .ask-new{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 10px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;color:var(--text)}
+  .ask-head .x{border:0;background:var(--paper);width:34px;height:34px;border-radius:9px;display:grid;place-items:center;cursor:pointer;color:var(--muted)}
+  .ask-thread{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:220px;background:#FAFBFD}
+  .ask-empty p{margin:0 0 10px;color:var(--muted);font-size:13.5px}
+  .ask-ex{display:flex;flex-wrap:wrap;gap:8px}
+  .ask-ex button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;font:inherit;font-size:13px;color:var(--text);cursor:pointer;text-align:left}
+  .ask-ex button:hover{border-color:var(--accent);color:var(--accent)}
+  .ask-q{align-self:flex-end;max-width:85%;background:var(--accent);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;white-space:pre-wrap}
+  .ask-a{align-self:stretch;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;font-size:14px;line-height:1.55;color:var(--text)}
+  .ask-a p{margin:0 0 8px}.ask-a p:last-child{margin-bottom:0}
+  .ask-a ul,.ask-a ol{margin:4px 0 8px;padding-left:20px}
+  .ask-a code{background:var(--paper);border-radius:5px;padding:1px 5px;font-size:12.5px}
+  .ask-a.wait{display:flex;align-items:center;gap:10px;color:var(--muted)}
+  .ask-a.err{border-color:#F5C2C2;background:#FDF2F2;color:#B42318}
+  .ask-chat{color:var(--accent);font-weight:700;text-decoration:none}
+  .ask-chat:hover{text-decoration:underline}
+  .ask-tablewrap{overflow-x:auto;margin:6px 0 10px}
+  .ask-table{border-collapse:collapse;font-size:13px;width:100%}
+  .ask-table th{text-align:left;color:var(--muted);font-weight:700;font-size:12px;padding:6px 8px;border-bottom:1px solid var(--line);white-space:nowrap}
+  .ask-table td{padding:7px 8px;border-bottom:1px solid var(--line-2)}
+  .ask-chart{margin:8px 0;padding:10px;border:1px solid var(--line-2);border-radius:12px;background:#fff}
+  .ask-chart figcaption{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:4px}
+  .ask-chart svg{width:100%;height:auto;display:block}
+  .ask-grid{stroke:var(--line-2);stroke-width:1}
+  .ask-ax{font-size:10.5px;fill:var(--muted)}
+  .ask-legend{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-top:4px}
+  .ask-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .ask-act{display:flex;align-items:center;gap:12px;margin-top:10px;padding:12px 14px;border-radius:12px;border:1px solid #DDE3FF;background:#F3F6FF;flex-wrap:wrap}
+  .ask-act .aa-sum{flex:1;min-width:200px;display:flex;flex-direction:column;gap:2px;font-size:13.5px}
+  .ask-act .aa-sum b{color:var(--ink)}
+  .ask-act .aa-sum em{font-style:normal;color:var(--muted);font-size:12.5px}
+  .ask-act .aa-btns{display:flex;gap:8px;align-items:center}
+  .ask-act .btn{padding:8px 14px;font-size:13px}
+  .ask-act .btn-primary{width:auto;background:var(--accent)}
+  .ask-act.done{background:#F2FBF6;border-color:#BFE6D1}.ask-act.done b{color:#0F7B4E}
+  .ask-act.cancelled{opacity:.6}
+  .ask-act.failed{background:#FDF2F2;border-color:#F5C2C2}.ask-act.failed b{color:#B42318}
+  .ask-tools{margin-top:8px;font-size:11.5px;color:var(--faint)}
+  .ask-form{display:flex;gap:10px;padding:12px 14px;border-top:1px solid var(--line);background:#fff;align-items:flex-end}
+  .ask-form textarea{flex:1;resize:none;min-height:44px;max-height:140px;font:inherit;font-size:14px;line-height:1.45;padding:11px 12px}
+  .ask-form .btn-primary{width:auto;background:var(--accent);padding:11px 18px}
+  .ask-foot{padding:0 16px 10px;font-size:11.5px;color:var(--faint);background:#fff}
+  body.ask-on{overflow:hidden}
+  @media (max-width:600px){
+    .ask-overlay{padding:0}
+    .ask-box{max-height:100vh;height:100%;border-radius:0}
+    .ask-head p{display:none}
+    .ask-btn kbd{display:none}
+  }
 </style>
 </head>
 <body>
@@ -904,6 +968,10 @@
       </a>
 
     </nav>
+    <button type="button" class="ask-btn" id="askBtn" aria-haspopup="dialog">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>
+      <span>Ask your dashboard</span><kbd id="askKbd">⌘K</kbd>
+    </button>
     <nav class="nav navbottom">
       <a href="#" data-view="settings">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
@@ -1305,6 +1373,23 @@
     <button class="btn btn-accept" type="submit">Send</button>
   </form>
 </aside>
+
+<div class="ask-overlay hidden" id="askOverlay">
+  <div class="ask-box" role="dialog" aria-modal="true" aria-labelledby="askTitle">
+    <div class="ask-head">
+      <span class="ask-ico"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9l-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.4z"/></svg></span>
+      <div><h2 id="askTitle">Ask your dashboard</h2><p>Questions, charts and actions about your chats and leads. Changes always need your approval.</p></div>
+      <button type="button" class="ask-new" id="askNew">New</button>
+      <button type="button" class="x" id="askClose" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="ask-thread" id="askThread" aria-live="polite"></div>
+    <form class="ask-form" id="askForm">
+      <textarea class="input" id="askInput" rows="1" placeholder="Ask anything, e.g. Which hot leads have no owner?" aria-label="Your question"></textarea>
+      <button class="btn btn-primary" type="submit" id="askSend">Ask</button>
+    </form>
+    <div class="ask-foot">Answers by Claude from your dashboard data. Check important numbers before acting on them.</div>
+  </div>
+</div>
 
 <script src="/admin/scoring.js"></script>
 <script>
@@ -3198,6 +3283,143 @@
     warn.textContent = typing.length ? "✍️ " + typing.join(", ") + (typing.length === 1 ? " is" : " are") + " typing a reply to this visitor. Check before you send, so they don't get two answers." : "";
     warn.classList.toggle("hidden", !typing.length);
   }
+
+
+  // ---------- Ask your dashboard (AI agent) ----------
+  var ASK = "/api/admin/assistant";
+  var ask = { msgs: [], busy: false, items: [] };
+  var ASK_EXAMPLES = ["How many leads did we get this week?", "Show chats per day for the last 30 days", "Which open leads are most likely to win?",
+    "Find chats where someone complained about price", "Which hot leads have no owner?", "Compare the team's reply times"];
+  function askOpen() {
+    $("askOverlay").classList.remove("hidden"); document.body.classList.add("ask-on");
+    if (typeof setMenu === "function") setMenu(false);
+    askRender(); setTimeout(function () { $("askInput").focus(); }, 30);
+  }
+  function askClose() { $("askOverlay").classList.add("hidden"); document.body.classList.remove("ask-on"); }
+  // Light markdown: tables, bullet lists, **bold**, line breaks, and [Name](chat:ID) links that open the chat.
+  function askMd(t) {
+    var lines = esc(t || "").split("\n"), out = [], i = 0;
+    var inline = function (x) {
+      return x.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+        .replace(/\[([^\]]+)\]\(chat:([^)\s]+)\)/g, "<a href='#' class='ask-chat' data-chat='$2'>$1</a>")
+        .replace(/`([^`]+)`/g, "<code>$1</code>");
+    };
+    while (i < lines.length) {
+      var l = lines[i];
+      if (/^\s*\|.*\|\s*$/.test(l) && i + 1 < lines.length && /^\s*\|[\s:|-]+\|\s*$/.test(lines[i + 1])) {
+        var head = l.trim().slice(1, -1).split("|"), rows = []; i += 2;
+        while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) { rows.push(lines[i].trim().slice(1, -1).split("|")); i++; }
+        out.push("<div class='ask-tablewrap'><table class='ask-table'><tr>" + head.map(function (h) { return "<th>" + inline(h.trim()) + "</th>"; }).join("") + "</tr>" +
+          rows.map(function (r) { return "<tr>" + r.map(function (c) { return "<td>" + inline(c.trim()) + "</td>"; }).join("") + "</tr>"; }).join("") + "</table></div>");
+        continue;
+      }
+      if (/^\s*([-*•]|\d+\.)\s+/.test(l)) {
+        var ordered = /^\s*\d+\./.test(l), items = [];
+        while (i < lines.length && /^\s*([-*•]|\d+\.)\s+/.test(lines[i])) { items.push("<li>" + inline(lines[i].replace(/^\s*([-*•]|\d+\.)\s+/, "")) + "</li>"); i++; }
+        out.push((ordered ? "<ol>" : "<ul>") + items.join("") + (ordered ? "</ol>" : "</ul>"));
+        continue;
+      }
+      if (/^#{1,4}\s+/.test(l)) { out.push("<p><b>" + inline(l.replace(/^#{1,4}\s+/, "")) + "</b></p>"); i++; continue; }
+      if (l.trim()) out.push("<p>" + inline(l) + "</p>");
+      i++;
+    }
+    return out.join("");
+  }
+  function askChart(ch) {
+    var W = 560, H = 220, P = { l: 40, r: 12, t: 26, b: 42 }, n = ch.labels.length || 1;
+    var all = []; ch.series.forEach(function (s) { all = all.concat(s.values.filter(function (v) { return isFinite(v); })); });
+    var max = Math.max(1, Math.max.apply(null, all.length ? all : [1]));
+    var x = function (i) { return P.l + (W - P.l - P.r) * (n === 1 ? 0.5 : i / (n - 1)); };
+    var y = function (v) { return H - P.b - (H - P.t - P.b) * (v / max); };
+    var colors = ["var(--accent)", "#F5A623", "#12B76A", "#E5484D"], g = "";
+    for (var k = 0; k <= 4; k++) { var gv = max * k / 4; g += "<line x1='" + P.l + "' x2='" + (W - P.r) + "' y1='" + y(gv) + "' y2='" + y(gv) + "' class='ask-grid'/><text x='" + (P.l - 6) + "' y='" + (y(gv) + 4) + "' class='ask-ax' text-anchor='end'>" + (Math.round(gv * 10) / 10) + "</text>"; }
+    var step = Math.ceil(n / 8), lab = "";
+    ch.labels.forEach(function (lb, i) { if (i % step === 0) lab += "<text x='" + (ch.type === "bar" ? P.l + (W - P.l - P.r) * (i + 0.5) / n : x(i)) + "' y='" + (H - P.b + 16) + "' class='ask-ax' text-anchor='middle'>" + esc(String(lb).replace(/^week of /, "").slice(0, 12)) + "</text>"; });
+    var body = "";
+    ch.series.forEach(function (s, si) {
+      var col = colors[si % colors.length];
+      if (ch.type === "bar") {
+        var bw = (W - P.l - P.r) / n / (ch.series.length + 0.6);
+        s.values.forEach(function (v, i) { var x0 = P.l + (W - P.l - P.r) * i / n + bw * (si + 0.3); body += "<rect x='" + x0 + "' y='" + y(v || 0) + "' width='" + Math.max(2, bw - 2) + "' height='" + Math.max(0, H - P.b - y(v || 0)) + "' rx='3' fill='" + col + "'><title>" + esc(ch.labels[i] + ": " + v) + "</title></rect>"; });
+      } else {
+        body += "<polyline fill='none' stroke='" + col + "' stroke-width='2.5' points='" + s.values.map(function (v, i) { return x(i) + "," + y(v || 0); }).join(" ") + "'/>";
+        s.values.forEach(function (v, i) { body += "<circle cx='" + x(i) + "' cy='" + y(v || 0) + "' r='3' fill='" + col + "'><title>" + esc(ch.labels[i] + ": " + v) + "</title></circle>"; });
+      }
+    });
+    var legend = ch.series.length > 1 ? "<div class='ask-legend'>" + ch.series.map(function (s, si) { return "<span><i style='background:" + colors[si % colors.length] + "'></i>" + esc(s.name || "Series " + (si + 1)) + "</span>"; }).join("") + "</div>" : "";
+    return "<figure class='ask-chart'>" + (ch.title ? "<figcaption>" + esc(ch.title) + "</figcaption>" : "") +
+      "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" + esc(ch.title || "Chart") + "'>" + g + body + lab + "</svg>" + legend + "</figure>";
+  }
+  function askRender() {
+    var th = $("askThread");
+    if (!ask.items.length) {
+      th.innerHTML = "<div class='ask-empty'><p>Try one of these:</p><div class='ask-ex'>" +
+        ASK_EXAMPLES.map(function (q) { return "<button type='button' data-ask='" + esc(q) + "'>" + esc(q) + "</button>"; }).join("") + "</div></div>";
+      return;
+    }
+    th.innerHTML = ask.items.map(function (it, idx) {
+      if (it.role === "user") return "<div class='ask-q'>" + esc(it.text) + "</div>";
+      if (it.role === "wait") return "<div class='ask-a wait'><span class='fu-spin'></span> Looking through your data…</div>";
+      if (it.role === "error") return "<div class='ask-a err'>" + esc(it.text) + "</div>";
+      return "<div class='ask-a'>" + askMd(it.text) + (it.charts || []).map(askChart).join("") +
+        (it.actions || []).map(function (a, ai) {
+          var st = a.state || "pending";
+          return "<div class='ask-act " + st + "'><div class='aa-sum'><b>" + (st === "done" ? "✓ Done" : st === "cancelled" ? "Cancelled" : st === "failed" ? "Couldn't do this" : "Approve this change?") + "</b><span>" + esc(a.summary) + "</span>" +
+            (a.result ? "<em>" + esc(a.result) + "</em>" : "") + "</div>" +
+            (st === "pending" ? "<div class='aa-btns'><button type='button' class='btn btn-ghost' data-act-cancel='" + idx + ":" + ai + "'>Cancel</button><button type='button' class='btn btn-primary' data-act-ok='" + idx + ":" + ai + "'>Approve</button></div>"
+              : st === "running" ? "<div class='aa-btns'><span class='fu-spin'></span></div>" : "") + "</div>";
+        }).join("") +
+        (it.tools && it.tools.length ? "<div class='ask-tools'>Used: " + esc(it.tools.filter(function (t, i, arr) { return arr.indexOf(t) === i; }).join(", ").replace(/_/g, " ")) + "</div>" : "") + "</div>";
+    }).join("");
+    th.scrollTop = th.scrollHeight;
+  }
+  function askSend(q) {
+    q = String(q || "").trim();
+    if (!q || ask.busy) return;
+    ask.busy = true; $("askSend").disabled = true;
+    ask.msgs.push({ role: "user", content: q });
+    ask.items.push({ role: "user", text: q }, { role: "wait" });
+    $("askInput").value = ""; askRender();
+    adminFetch(ASK, { messages: ask.msgs.slice(-12) }).then(function (r) {
+      ask.items.pop();
+      if (!r) return;
+      ask.msgs.push({ role: "assistant", content: r.answer || "" });
+      ask.items.push({ role: "assistant", text: r.answer, charts: r.charts, actions: r.actions, tools: r.tools_used });
+      askRender();
+      if (r.open) { askClose(); openChat(r.open); }
+    }).catch(function (e) {
+      ask.items.pop(); ask.msgs.pop();
+      ask.items.push({ role: "error", text: e.message }); askRender();
+    }).then(function () { ask.busy = false; $("askSend").disabled = false; $("askInput").focus(); });
+  }
+  $("askBtn").addEventListener("click", askOpen);
+  $("askClose").addEventListener("click", askClose);
+  $("askNew").addEventListener("click", function () { ask.msgs = []; ask.items = []; askRender(); $("askInput").focus(); });
+  $("askOverlay").addEventListener("click", function (e) { if (e.target === this) askClose(); });
+  $("askForm").addEventListener("submit", function (e) { e.preventDefault(); askSend($("askInput").value); });
+  $("askInput").addEventListener("keydown", function (e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); askSend(this.value); } });
+  $("askInput").addEventListener("input", function () { this.style.height = "auto"; this.style.height = Math.min(140, this.scrollHeight) + "px"; });
+  $("askThread").addEventListener("click", function (e) {
+    var ex = e.target.closest("[data-ask]"); if (ex) { askSend(ex.getAttribute("data-ask")); return; }
+    var link = e.target.closest(".ask-chat"); if (link) { e.preventDefault(); askClose(); openChat(link.getAttribute("data-chat")); return; }
+    var okB = e.target.closest("[data-act-ok]"), noB = e.target.closest("[data-act-cancel]");
+    if (!okB && !noB) return;
+    var parts = (okB || noB).getAttribute(okB ? "data-act-ok" : "data-act-cancel").split(":");
+    var a = ask.items[+parts[0]].actions[+parts[1]];
+    if (noB) { a.state = "cancelled"; ask.msgs.push({ role: "assistant", content: "(The person cancelled: " + a.summary + ")" }); askRender(); return; }
+    a.state = "running"; askRender();
+    adminFetch(ASK, { action: "execute", tool: a.tool, input: a.input }).then(function (r) {
+      a.state = "done"; a.result = r && r.result;
+      ask.msgs.push({ role: "assistant", content: "(Approved and done: " + a.summary + ". " + (a.result || "") + ")" });
+      load(true); if (typeof loadTeam === "function") loadTeam(); if (typeof fuLoad === "function") fuLoad().catch(function () {});
+    }).catch(function (err) { a.state = "failed"; a.result = err.message; })
+      .then(askRender);
+  });
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K") && getKey()) { e.preventDefault(); $("askOverlay").classList.contains("hidden") ? askOpen() : askClose(); }
+    else if (e.key === "Escape" && !$("askOverlay").classList.contains("hidden")) askClose();
+  });
+  if (!/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) $("askKbd").textContent = "Ctrl K";
 
   // ---------- events ----------
   $("pwToggle").addEventListener("click", function () {
