@@ -802,6 +802,8 @@
   .oc-log{margin-top:8px;font-size:12.5px;color:var(--muted)}
   .oc-log summary{cursor:pointer;font-weight:700;color:var(--text)}
   .oc-log ol{margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:3px}
+
+  .nav .count.late-count,.nav a .count.late-count{background:#E5484D;color:#fff}
 </style>
 </head>
 <body>
@@ -887,6 +889,10 @@
       <a href="#" data-view="followups">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
         Follow-ups <span class="count hidden" id="nFu">0</span>
+      </a>
+      <a href="#" data-view="team">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20a6 6 0 0 1 12 0"/><circle cx="17.5" cy="9" r="2.5"/><path d="M15.5 14.4A5 5 0 0 1 21 19"/></svg>
+        Team <span class="count hidden" id="nTeam">0</span>
       </a>
 
     </nav>
@@ -1039,6 +1045,28 @@
       <div id="fuList"></div>
     </div>
 
+    <div id="teamView" class="hidden">
+        <section class="card pad" id="assignCard">
+          <div class="sechead" style="margin-bottom:8px">
+            <div><h3>Assignment and response times</h3>
+              <p class="note" style="margin:4px 0 0">Who handles which lead, and how fast the team answers.</p></div>
+            <button class="btn btn-ghost hidden" type="button" id="teamSetBtn">Assignment settings</button>
+          </div>
+          <form class="team-settings hidden" id="teamSettings">
+            <div class="ts-row"><span>Assign new leads automatically</span>
+              <select class="input" id="tsMode"><option value="off">Off (assign by hand)</option><option value="priority">Priority order (top of the list first)</option><option value="round_robin">Take turns</option><option value="smart">Smart (learns who wins which leads)</option></select></div>
+            <div class="ts-row"><span>Reply target</span><span class="ts-sla"><input class="input" type="number" min="5" max="10080" id="tsSla"> minutes after a lead arrives</span></div>
+            <div class="ts-row ts-members"><span>Who handles leads, in priority order<em>Use ↑ ↓ to set the order. Untick someone to leave them out. A green dot means they have the dashboard open now.</em></span><ol id="tsMembers" class="prio-list"></ol></div>
+            <div class="ts-row"><span>Pass to the next person when there's no answer</span><label class="ts-switch"><input type="checkbox" id="tsEsc"> On</label></div>
+            <div class="ts-row ts-esc"><span>Live chat request</span><span class="ts-sla">next person after <input class="input" type="number" min="15" max="600" id="tsLive"> seconds</span></div>
+            <div class="ts-row ts-esc"><span>New lead</span><span class="ts-sla">next person if no reply within the reply target</span></div>
+            <div class="ts-row ts-esc"><span>Stop after</span><span class="ts-sla"><input class="input" type="number" min="0" max="5" id="tsMax"> handovers, then flag "Needs attention"</span></div>
+            <div class="ts-actions"><button class="btn btn-primary" type="submit" id="tsSave">Save</button><span class="fu-msg" id="tsMsg"></span></div>
+          </form>
+          <div id="teamBody"><p class="note">Loading…</p></div>
+        </section>
+    </div>
+
     <div id="calView" class="hidden">
       <div class="calwrap">
         <section class="card calcard">
@@ -1085,25 +1113,6 @@
           <p class="mlabel" style="margin-top:18px">Readiness for predictive ML (Step 6)</p>
           <div class="ready"><i id="ocReadyBar" style="width:0%"></i></div>
           <p class="note" id="ocReadyTxt"></p>
-        </section>
-        <section class="card pad incard" id="teamCard">
-          <div class="sechead" style="margin-bottom:8px">
-            <div><h3>Team: assignment and response times</h3>
-              <p class="note" style="margin:4px 0 0">How fast the team answers new leads, and who handles what.</p></div>
-            <button class="btn btn-ghost hidden" type="button" id="teamSetBtn">Assignment settings</button>
-          </div>
-          <form class="team-settings hidden" id="teamSettings">
-            <div class="ts-row"><span>Assign new leads automatically</span>
-              <select class="input" id="tsMode"><option value="off">Off (assign by hand)</option><option value="priority">Priority order (top of the list first)</option><option value="round_robin">Take turns</option><option value="smart">Smart (learns who wins which leads)</option></select></div>
-            <div class="ts-row"><span>Reply target</span><span class="ts-sla"><input class="input" type="number" min="5" max="10080" id="tsSla"> minutes after a lead arrives</span></div>
-            <div class="ts-row ts-members"><span>Who handles leads, in priority order<em>Use ↑ ↓ to set the order. Untick someone to leave them out. A green dot means they have the dashboard open now.</em></span><ol id="tsMembers" class="prio-list"></ol></div>
-            <div class="ts-row"><span>Pass to the next person when there's no answer</span><label class="ts-switch"><input type="checkbox" id="tsEsc"> On</label></div>
-            <div class="ts-row ts-esc"><span>Live chat request</span><span class="ts-sla">next person after <input class="input" type="number" min="15" max="600" id="tsLive"> seconds</span></div>
-            <div class="ts-row ts-esc"><span>New lead</span><span class="ts-sla">next person if no reply within the reply target</span></div>
-            <div class="ts-row ts-esc"><span>Stop after</span><span class="ts-sla"><input class="input" type="number" min="0" max="5" id="tsMax"> handovers, then flag "Needs attention"</span></div>
-            <div class="ts-actions"><button class="btn btn-primary" type="submit" id="tsSave">Save</button><span class="fu-msg" id="tsMsg"></span></div>
-          </form>
-          <div id="teamBody"><p class="note">Loading…</p></div>
         </section>
         <section class="card pad incard">
           <div class="sechead" style="margin-bottom:8px">
@@ -2532,12 +2541,21 @@
     $("insightsView").classList.toggle("hidden", which !== "insights");
     $("calView").classList.toggle("hidden", which !== "calendar");
     $("fuView").classList.toggle("hidden", which !== "followups");
+    $("teamView").classList.toggle("hidden", which !== "team");
     $("userView").classList.toggle("hidden", which !== "user");
     document.querySelector(".actions").classList.toggle("hidden", which !== "dash" && which !== "insights");
     $("exportBtn").classList.toggle("hidden", which === "insights");
     renderAlerts(lastAlerts[0], lastAlerts[1]);
   }
   function setView(v) {
+    if (v === "team") {
+      document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-view") === "team"); });
+      showMain("team");
+      $("pageTitle").textContent = "Team";
+      $("subtitle").textContent = "Lead owners, priority order, handovers and response times.";
+      renderTeam(); loadTeam();
+      return;
+    }
     if (v === "followups") {
       document.querySelectorAll(".nav a").forEach(function (a) { a.classList.toggle("active", a.getAttribute("data-view") === "followups"); });
       showMain("followups");
@@ -3026,6 +3044,8 @@
     return adminFetch(TEAM).then(function (d) {
       if (!d) return;
       team = d; fillOwnerFilter(); renderMyBar(); apply(); renderTeam();
+      var od = chats.filter(function (c) { var r = respOf(c); return r && r.overdue; }).length;
+      $("nTeam").textContent = od; $("nTeam").classList.toggle("hidden", !od); $("nTeam").classList.add("late-count");
       if (typeof lastAlerts !== "undefined" && lastAlerts && lastAlerts[0]) renderAlerts(lastAlerts[0], lastAlerts[1]);   // show handover countdowns
     }).catch(function (e) { team = null; if ($("teamBody")) $("teamBody").innerHTML = "<p class='note' style='color:#B42318'>" + esc(e.message) + "</p>"; });
   }
@@ -3173,7 +3193,7 @@
   window.matchMedia("(min-width:821px)").addEventListener("change", function (m) { if (m.matches) setMenu(false); });
   // orange dot on ☰ when something in the menu needs attention (follow-ups, live chats)
   setInterval(function () {
-    var any = ["nFu", "nMeet"].some(function (id) { var el = $(id); return el && !el.classList.contains("hidden") && el.textContent !== "0"; });
+    var any = ["nFu", "nMeet", "nTeam"].some(function (id) { var el = $(id); return el && !el.classList.contains("hidden") && el.textContent !== "0"; });
     $("menuDot").classList.toggle("hidden", !any);
   }, 2000);
   document.querySelectorAll(".nav a").forEach(function (a) {
@@ -3346,7 +3366,6 @@
       industries: [countBy(an, industries), countBy(anPrev, industries)] };
   }
   function renderInsights() {
-    renderTeam();
     var st = insightStats(), p = st.p;
     var contacts = st.people.filter(function (c) { return c._score && c._score.is_contact; }).length;
     var leadsN = st.people.filter(function (c) { return c._score && c._score.is_lead; }).length;
