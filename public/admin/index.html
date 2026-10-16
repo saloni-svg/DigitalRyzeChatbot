@@ -8,7 +8,7 @@
 <script>
   // Already signed in (this tab)? Hide the sign-in screen before the page is drawn, so a refresh
   // goes straight to the dashboard instead of flashing the sign-in page.
-  try { if (sessionStorage.getItem("dr-admin-key")) document.documentElement.classList.add("signed-in"); } catch (e) {}
+  try { if (sessionStorage.getItem("dr-admin-key") && !/[?&]reset=/.test(location.search)) document.documentElement.classList.add("signed-in"); } catch (e) {}
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -888,6 +888,17 @@
     .ask-head p{display:none}
     .ask-btn kbd{display:none}
   }
+
+  /* forgot / reset password */
+  .label-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .forgot-link,.back-link{font-size:13px;font-weight:600;color:var(--accent);text-decoration:none}
+  .forgot-link:hover,.back-link:hover{text-decoration:underline}
+  .notice-ok{margin-top:12px;padding:10px 12px;border-radius:10px;background:#E8F7EF;border:1px solid #BFE6D1;color:#0F6B45;font-size:13.5px;line-height:1.45}
+  .pw-meter{height:5px;border-radius:999px;background:var(--line-2,#EEF1F6);margin-top:8px;overflow:hidden}
+  .pw-meter i{display:block;height:100%;width:0;border-radius:999px;transition:width .2s ease,background .2s ease;background:#E5484D}
+  .pw-meter i.ok{background:#F5A623}.pw-meter i.strong{background:#12B76A}
+  .pw-hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+  #rpErr a{color:var(--accent);font-weight:600}
 </style>
 </head>
 <body>
@@ -921,7 +932,7 @@
         <input class="input" id="em" type="email" autocomplete="username" placeholder="you@digitalryze.com" required autofocus>
       </div>
       <div class="field">
-        <label for="pw">Password</label>
+        <div class="label-row"><label for="pw">Password</label><a href="#" class="forgot-link" id="forgotLink">Forgot password?</a></div>
         <div class="pw-wrap">
           <input class="input" id="pw" type="password" autocomplete="current-password" placeholder="Your password" required>
           <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password" title="Show password">
@@ -931,7 +942,45 @@
       </div>
       <button class="btn btn-primary login-btn" type="submit" id="loginBtn">Sign in</button>
       <div class="error" id="loginErr" role="alert"></div>
-      <div class="login-help">Trouble signing in? Ask an admin to reset your password.</div>
+      <div class="notice-ok hidden" id="loginOk" role="status"></div>
+    </form>
+
+    <form class="login-card hidden" id="forgotForm" novalidate>
+      <img src="/admin/logo.png" alt="DigitalRyze" class="login-card-logo">
+      <h1>Reset your password</h1>
+      <p>Enter your account email. We'll send you a link to choose a new password.</p>
+      <div class="field">
+        <label for="fpEm">Email</label>
+        <input class="input" id="fpEm" type="email" autocomplete="username" placeholder="you@digitalryze.com" required>
+      </div>
+      <button class="btn btn-primary login-btn" type="submit" id="fpBtn">Send reset link</button>
+      <div class="error" id="fpErr" role="alert"></div>
+      <div class="notice-ok hidden" id="fpOk" role="status"></div>
+      <div class="login-help"><a href="#" class="back-link" data-back>← Back to sign in</a></div>
+    </form>
+
+    <form class="login-card hidden" id="resetForm" novalidate>
+      <img src="/admin/logo.png" alt="DigitalRyze" class="login-card-logo">
+      <h1>Choose a new password</h1>
+      <p id="rpFor">Checking your reset link…</p>
+      <div id="rpFields" class="hidden">
+        <div class="field">
+          <label for="rpPw">New password</label>
+          <div class="pw-wrap">
+            <input class="input" id="rpPw" type="password" autocomplete="new-password" placeholder="At least 8 characters" required>
+            <button type="button" class="pw-toggle" data-toggle="rpPw" aria-label="Show password" title="Show password"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button>
+          </div>
+          <div class="pw-meter" aria-hidden="true"><i id="rpMeter"></i></div>
+          <div class="pw-hint" id="rpHint">At least 8 characters, with a letter and a number.</div>
+        </div>
+        <div class="field">
+          <label for="rpPw2">Repeat new password</label>
+          <input class="input" id="rpPw2" type="password" autocomplete="new-password" placeholder="Type it again" required>
+        </div>
+        <button class="btn btn-primary login-btn" type="submit" id="rpBtn">Save new password</button>
+      </div>
+      <div class="error" id="rpErr" role="alert"></div>
+      <div class="login-help"><a href="#" class="back-link" data-back>← Back to sign in</a></div>
     </form>
   </div>
 </section>
@@ -3446,6 +3495,100 @@
     this.setAttribute("aria-label", show ? "Hide password" : "Show password");
     this.title = show ? "Hide password" : "Show password";
   });
+
+  // ---------- Forgot password / reset ----------
+  var resetToken = (location.search.match(/[?&]reset=([a-f0-9]{64})/) || [])[1] || "";
+  function loginPanel(which) {
+    ["loginForm", "forgotForm", "resetForm"].forEach(function (id) { $(id).classList.toggle("hidden", id !== which); });
+  }
+  function backToSignIn(email, okMsg) {
+    loginPanel("loginForm");
+    if (email) $("em").value = email;
+    $("loginErr").textContent = "";
+    $("loginOk").textContent = okMsg || ""; $("loginOk").classList.toggle("hidden", !okMsg);
+    ($("em").value ? $("pw") : $("em")).focus();
+  }
+  function postLogin(body) {
+    return fetch(LOGIN, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { if (!r.ok) throw new Error(d.error || "Something went wrong. Try again."); return d; }); });
+  }
+  $("forgotLink").addEventListener("click", function (e) {
+    e.preventDefault();
+    loginPanel("forgotForm");
+    $("fpEm").value = $("em").value.trim(); $("fpErr").textContent = ""; $("fpOk").classList.add("hidden");
+    $("fpBtn").disabled = false; $("fpBtn").textContent = "Send reset link";
+    $("fpEm").focus();
+  });
+  document.querySelectorAll("[data-back]").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      if (resetToken) { resetToken = ""; history.replaceState(null, "", location.pathname); }
+      backToSignIn($("fpEm").value.trim() || $("em").value.trim());
+    });
+  });
+  $("forgotForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var em = $("fpEm").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { $("fpErr").textContent = "Enter a valid email address."; return; }
+    $("fpErr").textContent = ""; $("fpBtn").disabled = true; $("fpBtn").textContent = "Sending…";
+    postLogin({ action: "forgot", email: em, origin: location.origin }).then(function (d) {
+      $("fpOk").textContent = d.message || "If this email has an account, a reset link is on its way.";
+      $("fpOk").classList.remove("hidden"); $("fpBtn").textContent = "Link sent";
+      setTimeout(function () { $("fpBtn").disabled = false; $("fpBtn").textContent = "Send again"; }, 30000);
+    }).catch(function (err) { $("fpErr").textContent = err.message; $("fpBtn").disabled = false; $("fpBtn").textContent = "Send reset link"; });
+  });
+  document.querySelectorAll("[data-toggle]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var inp = $(b.getAttribute("data-toggle")), show = inp.type === "password";
+      inp.type = show ? "text" : "password"; $("rpPw2").type = inp.type;
+      b.setAttribute("aria-label", show ? "Hide password" : "Show password"); b.classList.toggle("on", show);
+    });
+  });
+  function pwStrength(p) {
+    var s = 0;
+    if (p.length >= 8) s++; if (p.length >= 12) s++;
+    if (/[a-z]/.test(p) && /[A-Z]/.test(p)) s++; if (/[0-9]/.test(p)) s++; if (/[^A-Za-z0-9]/.test(p)) s++;
+    return Math.min(4, s);
+  }
+  $("rpPw").addEventListener("input", function () {
+    var p = this.value, st = pwStrength(p), m = $("rpMeter");
+    m.style.width = (p ? Math.max(1, st) * 25 : 0) + "%";
+    m.className = st <= 1 ? "weak" : st === 2 ? "ok" : "strong";
+    $("rpHint").textContent = !p ? "At least 8 characters, with a letter and a number."
+      : p.length < 8 ? "Too short: " + (8 - p.length) + " more character" + (8 - p.length === 1 ? "" : "s") + "."
+      : !/[A-Za-z]/.test(p) || !/[0-9]/.test(p) ? "Add at least one letter and one number."
+      : st >= 3 ? "Strong password." : "OK. Longer, or with a symbol, is stronger.";
+    $("rpErr").textContent = "";
+  });
+  $("rpPw2").addEventListener("input", function () { $("rpErr").textContent = ""; });
+  $("fpEm").addEventListener("input", function () { $("fpErr").textContent = ""; });
+  $("resetForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var a = $("rpPw").value, b = $("rpPw2").value;
+    if (a.length < 8) { $("rpErr").textContent = "Password must be at least 8 characters."; return; }
+    if (!/[A-Za-z]/.test(a) || !/[0-9]/.test(a)) { $("rpErr").textContent = "Use at least one letter and one number."; return; }
+    if (a !== b) { $("rpErr").textContent = "The two passwords don't match."; $("rpPw2").focus(); return; }
+    $("rpBtn").disabled = true; $("rpBtn").textContent = "Saving…";
+    postLogin({ action: "reset", token: resetToken, password: a }).then(function (d) {
+      resetToken = ""; history.replaceState(null, "", location.pathname);
+      $("rpPw").value = $("rpPw2").value = "";
+      setKey(""); setMe(null); rememberPw("");                // sign out any old session in this browser
+      backToSignIn(d.email, "✓ Your password has been changed. Sign in with your new password.");
+    }).catch(function (err) { $("rpErr").textContent = err.message; })
+      .then(function () { $("rpBtn").disabled = false; $("rpBtn").textContent = "Save new password"; });
+  });
+  function startReset() {
+    showLogin(); loginPanel("resetForm");
+    postLogin({ action: "check_reset", token: resetToken }).then(function (d) {
+      $("rpFor").innerHTML = "For <b>" + esc(d.email) + "</b>. The link works once.";
+      $("rpFields").classList.remove("hidden"); $("rpPw").focus();
+    }).catch(function (err) {
+      $("rpFor").textContent = "";
+      $("rpErr").innerHTML = esc(err.message) + " <a href='#' id='rpAgain'>Send a new link</a>";
+      $("rpAgain").addEventListener("click", function (ev) { ev.preventDefault(); resetToken = ""; history.replaceState(null, "", location.pathname); $("forgotLink").click(); });
+    });
+  }
+
   $("loginForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var em = $("em").value.trim(), pw = $("pw").value;
@@ -3460,7 +3603,7 @@
       })
       .catch(function () { showLogin("Can't reach the server. Try again."); });
   });
-  $("pw").addEventListener("input", function () { $("loginErr").textContent = ""; });
+  $("pw").addEventListener("input", function () { $("loginErr").textContent = ""; $("loginOk").classList.add("hidden"); });
   $("logout").addEventListener("click", function () { setKey(""); setMe(null); rememberPw(""); range = "all"; customFrom = customTo = ""; $("monthSel").value = "all"; $("customBox").classList.remove("on"); chats = []; leads = []; stopLivePoll(); closeChat(); setView("chats"); showLogin(); });
   $("alerts").addEventListener("click", function (e) {
     var b = e.target.closest("button[data-act]"), card = e.target.closest("[data-req]");
@@ -4025,7 +4168,8 @@
     wrap.appendChild(btn);
   });
   try { var saved = JSON.parse(sessionStorage.getItem(ME_KEY) || "null"); if (saved) setMe(saved); } catch (e) {}
-  if (getKey()) { showApp(); load(); loadMe(); } else showLogin();   // show the dashboard frame straight away while data loads
+  if (resetToken) startReset();                                      // opened from a reset email
+  else if (getKey()) { showApp(); load(); loadMe(); } else showLogin();   // show the dashboard frame straight away while data loads
   checkPush();
 })();
 </script>
