@@ -16,6 +16,8 @@ function cors(req, res) {
   const origin = req.headers.origin || "";
   // Always allow the Vercel deployment itself, so the test page works.
   if (req.headers.host) allowed.push(`https://${req.headers.host}`);
+  // Local dev (vercel dev) serves the test page over plain http.
+  if (/^localhost(:\d+)?$/.test(req.headers.host || "")) allowed.push(`http://${req.headers.host}`);
   if (allowed.includes(origin) || allowed.includes("*")) {
     res.setHeader("Access-Control-Allow-Origin", origin || "*");
   }
